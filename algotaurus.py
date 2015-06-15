@@ -3,7 +3,7 @@
 AlgoTaurus
 ==========
 An educational game to teach programming.
-Write a program to make the robot find the exit.
+Write a program to make the AlgoTaurus find the exit.
 
 Copyright, 2015, Attila Krajcsi, Ádám Markója (GUI)
 
