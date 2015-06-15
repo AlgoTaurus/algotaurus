@@ -1,7 +1,7 @@
 AlgoTaurus
 ==========
 An educational game to teach programming.
-Write a program to make the robot find the exit.
+Write a program to make the AlgoTaurus find the exit.
 
 The game is a remake and an extension of the game Labirint by Lukyanov Konstantin and Volkov Sergey.
 
