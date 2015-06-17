@@ -416,7 +416,7 @@ class LabyrinthGui:
         self.root.title('AlgoTaurus')
 
         # tk limitation for icon use: http://stackoverflow.com/questions/11176638/python-setting-application-icon
-        if "nt" == os.name:
+        if os.name == 'nt':
             self.root.iconbitmap('maze.ico')
         else:
             img = tk.PhotoImage(file='maze.png')
@@ -613,7 +613,7 @@ GOTO x\t      Continue with line x'''
         self.textPad.insert('insert', text)
 
     def rclick(self, event):
-        self.rclickmenu.post(event.x_root, event.y_root)
+        self.rclickmenu.tk_popup(event.x_root, event.y_root)
 
     def draw_labyr(self, labyr):
         """Drawing the labyr on the canvas from the numpy array"""
