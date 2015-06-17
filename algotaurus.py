@@ -202,8 +202,8 @@ class Script:
             return 'go on'
 
 
-class LabyrinthTui:
-    """Text UI for the Labyrinth game.
+class ATTui:
+    """Text UI for the AlgoTaurus game.
     """
 
     def __init__(self):
@@ -224,7 +224,7 @@ class LabyrinthTui:
         # FIXME the help string cannot be printed on the minimum size
         if self.maxx < 50 or self.maxy < 15:
             curses.endwin()
-            print 'Too small terminal. Cannot run Labyrinth'
+            print 'Too small terminal. Cannot run AlgoTaurus'
 
         # Code area
         edit_border_win = curses.newwin(self.maxy-5, 17, 0, 0)
@@ -246,7 +246,7 @@ class LabyrinthTui:
         # Labyrinth area
         labyr_border_win = curses.newwin(self.maxy-5, self.maxx-18, 0, 17)
         labyr_border_win.border()
-        labyr_border_win.addstr('Labyrinth')
+        labyr_border_win.addstr('AlgoTaurus')
         labyr_border_win.refresh()
 
         self.labyr_win = curses.newwin(self.maxy-7, self.maxx-20, 1, 18)
@@ -280,7 +280,7 @@ class LabyrinthTui:
         edit_help = 'Ctrl+G: Execute code   Ctrl+O: Insert line'
         edit_help_2 = 'Ctrl+K: Delete line (at the beginning of the line)'
         run_help = 'F5:Run   F6:Step   F7:Stop   +:Faster run   -:Slower run'
-        run_help_2 = 'F10: Exit Labyrinth'
+        run_help_2 = 'F10: Exit AlgoTaurus'
         command_help = '''Help AlgoTaurus to find the exit.
 
 Available commands:
@@ -382,13 +382,13 @@ GOTO x     continue with line x'''
         curses.endwin()
 
 
-class LabyrinthGui:
-    """Graphical User Interface for the Labyrinth game.
+class ATGui:
+    """Graphical User Interface for the AlgoTaurus game.
     Parameters:
     size: size of each squares in the labyrinth in pixels (default:15)
     lines: number of lines in the coder (default:30)
     Set up GUI with custom parameters:
-    LabyrinthGUI(size=__, lines=__)
+    ATGui(size=__, lines=__)
     """
 
     def __init__(self, size=15, lines=30):
@@ -761,7 +761,7 @@ GOTO x\t      Continue with line x'''
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] in ['-t', '-tui']:  # Run TUI version
-            labyr = LabyrinthTui()
+            labyr = ATTui()
         else:
             print '''Use of AlgoTaurus:
 algotaurus -t
@@ -769,4 +769,4 @@ algotaurus -t
 algotaurus
     run in graphical user interface mode'''
     else:  # Run GUI version
-        root = LabyrinthGui()
+        root = ATGui()
