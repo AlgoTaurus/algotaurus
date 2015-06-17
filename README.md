@@ -7,11 +7,12 @@ Write a program to make the AlgoTaurus find the exit.
 
 ## Installation
 
-- On Windows download the installer from [SourceForge] (http://sourceforge.net/projects/algotaurus/)
+On Windows
+- Download the installer from [SourceForge] (http://sourceforge.net/projects/algotaurus/)
 - After installation you can run AlgoTaurus from the Start menu.
 
-
-- On Linux download the source files.
+On Linux
+- Download the source files (Download ZIP button on the right of the screen).
 - Open terminal in the directory you have copied the files to and type 'python algotaurus.py' 
 
 ## Use and discuss AlgoTaurus
