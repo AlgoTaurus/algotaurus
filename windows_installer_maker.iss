@@ -4,7 +4,7 @@
 #define MyAppName "AlgoTaurus"
 #define TUIName "AlgoTaurus (TUI mode)"
 #define MyAppVersion "1.0"
-#define MyAppPublisher "Attila Krajcsi and ¡d·m MarkÛja"
+#define MyAppPublisher "Attila Krajcsi and √Åd√°m Mark√≥ja"
 #define MyAppURL "https://github.com/krajcsi/algotaurus"
 #define MyAppExeName "algotaurus.exe"
 
@@ -26,7 +26,7 @@ AllowNoIcons=yes
 LicenseFile=C:\Users\Adam\Desktop\algotaurus_win\license.txt
 OutputDir=C:\Users\Adam\Desktop\algotaurus_win
 OutputBaseFilename=algotaurus_setup
-SetupIconFile=C:\Users\Adam\Desktop\algotaurus_win\dist\algotaurus\algotaurus.ico
+SetupIconFile=C:\Users\Adam\Desktop\algotaurus_win\dist\algotaurus\maze.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -44,10 +44,10 @@ Source: "C:\Users\Adam\Desktop\algotaurus_win\dist\algotaurus\*"; DestDir: "{app
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\algotaurus.ico"
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"; IconFilename: "{app}\AT_uninst.ico"
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}";IconFilename: "{app}\algotaurus.ico"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}";IconFilename: "{app}\algotaurus.ico"; Tasks: quicklaunchicon
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\maze.ico"
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"; IconFilename: "{app}\uninst.ico"
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}";IconFilename: "{app}\maze.ico"; Tasks: desktopicon
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}";IconFilename: "{app}\maze.ico"; Tasks: quicklaunchicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
