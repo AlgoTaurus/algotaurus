@@ -202,7 +202,7 @@ class Script:
             return 'go on'
 
 
-class ATTui:
+class AlgoTaurusTui:
     """Text UI for the AlgoTaurus game.
     """
 
@@ -382,13 +382,13 @@ GOTO x     continue with line x'''
         curses.endwin()
 
 
-class ATGui:
+class AlgoTaurusGui:
     """Graphical User Interface for the AlgoTaurus game.
     Parameters:
     size: size of each squares in the labyrinth in pixels (default:15)
     lines: number of lines in the coder (default:30)
     Set up GUI with custom parameters:
-    ATGui(size=__, lines=__)
+    AlgoTaurusGui(size=__, lines=__)
     """
 
     def __init__(self, size=15, lines=30):
@@ -761,7 +761,7 @@ GOTO x\t      Continue with line x'''
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] in ['-t', '-tui']:  # Run TUI version
-            labyr = ATTui()
+            labyr = AlgoTaurusTui()
         else:
             print '''Use of AlgoTaurus:
 algotaurus -t
@@ -769,4 +769,4 @@ algotaurus -t
 algotaurus
     run in graphical user interface mode'''
     else:  # Run GUI version
-        root = ATGui()
+        root = AlgoTaurusGui()
