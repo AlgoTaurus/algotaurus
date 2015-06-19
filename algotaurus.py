@@ -585,6 +585,7 @@ GOTO x\t      Continue with line x'''
 
     def exit_command(self, event=None):
         if self.tkMessageBox.askokcancel('Quit', 'Do you really want to quit?'):
+            self.exit_flag=True
             self.root.destroy()
 
     def about_command(self, event=None):
