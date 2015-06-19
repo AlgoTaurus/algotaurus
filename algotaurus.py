@@ -412,6 +412,7 @@ class AlgoTaurusGui:
         self.rt_prev = 0
         self.mode = None
         self.execute = False
+        self.exit_flag=False
         self.root = tk.Tk()
         self.root.title('AlgoTaurus')
 
@@ -672,10 +673,7 @@ GOTO x\t      Continue with line x'''
         self.buttrun.configure(state='disabled')
         if self.execute == False:
             self.execute_code()
-        else:
-            self.root.bind('<F2>', self.speed_down)
-            self.root.bind('<F3>', self.speed_up)
-
+            
     def speed_up(self, event=None):
         if self.mode == 'step':
              self.rt_prev /= 2
@@ -731,7 +729,7 @@ GOTO x\t      Continue with line x'''
         self.canvas.after(1000)
         current_pos = 'end'
         self.step = 1
-        while result == 'go on':
+        while result == 'go on' and not self.exit_flag:
             if self.step == 1:
                 self.linebox.config(state='normal')
                 self.linebox.delete(current_pos)
@@ -746,16 +744,17 @@ GOTO x\t      Continue with line x'''
                 self.canvas.update()
             if self.stop == 1:
                 break
-        self.linebox.configure(state='normal')
-        self.linebox.delete(current_pos)
-        self.linebox.configure(state='disabled')
-        if not self.stop:
-            self.tkMessageBox.showinfo('Result', result)
-        self.buttstop.configure(state='disabled')
-        self.buttstep.configure(state='normal')
-        self.buttrun.configure(state='normal')
-        self.textPad.configure(state='normal', bg='white')
-        self.execute = False
+        if not self.exit_flag:
+            self.linebox.configure(state='normal')
+            self.linebox.delete(current_pos)
+            self.linebox.configure(state='disabled')
+            if not self.stop:
+                self.tkMessageBox.showinfo('Result', result)
+            self.buttstop.configure(state='disabled')
+            self.buttstep.configure(state='normal')
+            self.buttrun.configure(state='normal')
+            self.textPad.configure(state='normal', bg='white')
+            self.execute = False
 
 
 if __name__ == '__main__':
