@@ -673,10 +673,7 @@ GOTO x\t      Continue with line x'''
         self.buttrun.configure(state='disabled')
         if self.execute == False:
             self.execute_code()
-        else:
-            self.root.bind('<F2>', self.speed_down)
-            self.root.bind('<F3>', self.speed_up)
-
+            
     def speed_up(self, event=None):
         if self.mode == 'step':
              self.rt_prev /= 2
