@@ -17,6 +17,7 @@ import sys
 import os
 import appdirs
 import ConfigParser
+import gettext
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
@@ -27,7 +28,12 @@ if not os.path.isfile(dirs.user_config_dir+'/algotaurus.ini'):
     shutil.copyfile(os.path.dirname(os.path.abspath(__file__))+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
 config = ConfigParser.RawConfigParser()
 config.read(dirs.user_config_dir+'/algotaurus.ini')
-lang = config.get('settings', 'language')
+language = config.get('settings', 'language')
+
+# Set language for localization
+t = gettext.translation('algotaurus', os.path.dirname(os.path.abspath(__file__))+'/locale/', [language], fallback=True)
+_ = t.ugettext
+# Only the GUI is localized now, not the TUI
 
 class Labyrinth:
     def __init__(self, x=11, y=11):
@@ -103,9 +109,9 @@ class Robot:
     
     def step(self):
         if self.labyr[tuple(self.facing_pos)] == 1:
-            return 'Game over. AlgoTaurus run into wall.'
+            return _('Game over. AlgoTaurus run into wall.')
         elif self.labyr[tuple(self.facing_pos)] == 2:
-            return 'Game over. AlgoTaurus stepped into exit.'
+            return _('Game over. AlgoTaurus stepped into exit.')
         else:
             self.previous_pos = self.pos[:]
             self.pos = self.facing_pos
@@ -125,9 +131,9 @@ class Robot:
     
     def robot_quit(self):
         if self.labyr[tuple(self.facing_pos)] == 2:
-            return 'Congratulations! AlgoTaurus successfully reached the exit.'
+            return _('Congratulations! AlgoTaurus successfully reached the exit.')
         else:
-            return 'Game over. AlgoTaurus was not in the exit yet.'
+            return _('Game over. AlgoTaurus was not in the exit yet.')
     
     def wall(self):
         return True if self.labyr[tuple(self.facing_pos)] == 1 else False
@@ -157,7 +163,7 @@ class Script:
         
         # Check if we reached the end without a solution
         if self.current_line > self.max_line:
-            return 'Game over. Code ended.'
+            return _('Game over. Code ended.')
 
         # Skip empty line
         if self.code[self.current_line].rstrip() == '':
@@ -169,7 +175,7 @@ class Script:
 
         # Check if command is correct
         if not (command in ['step', 'right', 'left', 'wall?', 'exit?', 'quit', 'goto']):
-            return 'Syntax error. Unknown command.'
+            return _('Syntax error. Unknown command.')
         
         # Run the command
         if command == 'step':
@@ -185,33 +191,33 @@ class Script:
             return 'go on'
         elif command == 'wall?':
             if len(params) < 2:
-                return 'Syntax error. Wall test needs two parameters.'
+                return _('Syntax error. Wall test needs two parameters.')
             try:
                 yes_line = int(params[0])
                 no_line = int(params[1])
             except:
-                return 'Syntax error. Wall test needs two numbers.'
+                return _('Syntax error. Wall test needs two numbers.')
             self.current_line = yes_line if self.robot.wall() else no_line
             return 'go on'
         elif command == 'exit?':
             if len(params) < 2:
-                return 'Syntax error. Exit test needs two parameters.'
+                return _('Syntax error. Exit test needs two parameters.')
             try:
                 yes_line = int(params[0])
                 no_line = int(params[1])
             except:
-                return 'Syntax error. Exit test needs two numbers.'
+                return _('Syntax error. Exit test needs two numbers.')
             self.current_line = yes_line if self.robot.robot_exit() else no_line
             return 'go on'
         elif command == 'quit':
             return self.robot.robot_quit()
         elif command == 'goto':
             if len(params) == 0:
-                return 'Syntax error. Goto command needs a parameter.'
+                return _('Syntax error. Goto command needs a parameter.')
             try:
                 self.current_line = int(params[0])
             except:
-                return 'Syntax error. Goto command needs a number.'
+                return _('Syntax error. Goto command needs a number.')
             return 'go on'
 
 
@@ -438,7 +444,7 @@ class AlgoTaurusGui:
 
         self.root.protocol('WM_DELETE_WINDOW', self.exit_command)
 
-        command_help = '''Help AlgoTaurus to find the exit.
+        command_help = _('''Help AlgoTaurus to find the exit.
 
 Available commands:
 
@@ -459,32 +465,32 @@ QUIT\t      Leave the labyrinth
 \t      Ahead of empty field
 \t      and wall it crashes.
            
-GOTO x\t      Continue with line x'''
+GOTO x\t      Continue with line x''')
 
         # Create menu for the GUI
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
         self.root.config(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=False)
-        self.menu.add_cascade(label='File', menu=self.filemenu)
-        self.filemenu.add_command(label='New', command=self.new_command, accelerator='Ctrl+N')
-        self.filemenu.add_command(label='Open...', command=self.open_command, accelerator='Ctrl+O')
-        self.filemenu.add_command(label='Save', command=self.save_command, accelerator='Ctrl+S')
+        self.menu.add_cascade(label=_('File'), menu=self.filemenu)
+        self.filemenu.add_command(label=_('New'), command=self.new_command, accelerator='Ctrl+N')
+        self.filemenu.add_command(label=_('Open...'), command=self.open_command, accelerator='Ctrl+O')
+        self.filemenu.add_command(label=_('Save'), command=self.save_command, accelerator='Ctrl+S')
         self.filemenu.add_separator()
-        self.filemenu.add_command(label='Exit', command=self.exit_command, accelerator='Ctrl+Q')
+        self.filemenu.add_command(label=_('Exit'), command=self.exit_command, accelerator='Ctrl+Q')
         self.editmenu = tk.Menu(self.menu, tearoff=False)
-        self.menu.add_cascade(label='Edit', menu=self.editmenu)
-        self.editmenu.add_command(label='Copy', command=self.copy_command, accelerator='Ctrl+C')
-        self.editmenu.add_command(label='Cut', command=self.cut_command, accelerator='Ctrl+X')
-        self.editmenu.add_command(label='Paste', command=self.paste_command, accelerator='Ctrl+V')
+        self.menu.add_cascade(label=_('Edit'), menu=self.editmenu)
+        self.editmenu.add_command(label=_('Copy'), command=self.copy_command, accelerator='Ctrl+C')
+        self.editmenu.add_command(label=_('Cut'), command=self.cut_command, accelerator='Ctrl+X')
+        self.editmenu.add_command(label=_('Paste'), command=self.paste_command, accelerator='Ctrl+V')
         self.editmenu.add_separator()
-        self.editmenu.add_command(label='Select All', command=self.sel_all, accelerator='Ctrl+A')
+        self.editmenu.add_command(label=_('Select All'), command=self.sel_all, accelerator='Ctrl+A')
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
-        self.menu.add_cascade(label='Help', menu=self.helpmenu)
-        self.helpmenu.add_command(label='About...', command=self.about_command)
+        self.menu.add_cascade(label=_('Help'), menu=self.helpmenu)
+        self.helpmenu.add_command(label=_('About...'), command=self.about_command)
         self.rclickmenu = tk.Menu(self.menu, tearoff=False)
-        self.rclickmenu.add_command(label='Copy', command=self.copy_command)
-        self.rclickmenu.add_command(label='Cut', command=self.cut_command)
-        self.rclickmenu.add_command(label='Paste', command=self.paste_command)
+        self.rclickmenu.add_command(label=_('Copy'), command=self.copy_command)
+        self.rclickmenu.add_command(label=_('Cut'), command=self.cut_command)
+        self.rclickmenu.add_command(label=_('Paste'), command=self.paste_command)
         self.root.bind('<Control-n>', self.new_command)
         self.root.bind('<Control-N>', self.new_command)
         self.root.bind('<Control-s>', self.save_command)
@@ -512,14 +518,14 @@ GOTO x\t      Continue with line x'''
 
         # Creating coder widget
         self.rt_str = tk.StringVar()
-        self.rt_str.set('Run timer: %s msec' % int(self.run_timer))
+        self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
         self.textPad = tk.Text(self.mainframe, width=15, height=self.lines, wrap='none')
         self.textPad.config(bg='white', fg='black')
         numbers = ''.join([str(i).ljust(2)+'\n' for i in range(1, self.lines+1)])
         self.linebox = tk.Text(self.mainframe, width=3, height=self.lines, state='normal')
         self.linebox.insert('1.0', numbers)
         self.linebox.configure(bg='grey', fg='black', state='disabled', relief='flat')
-        self.codertitle = ttk.Label(self.mainframe, text='Coder', justify='center')
+        self.codertitle = ttk.Label(self.mainframe, text=_('Coder'), justify='center')
         self.timerlabel = ttk.Label(self.speedframe, textvariable=self.rt_str)
         self.textPad.bind('<Button-3>', self.rclick)
         self.textPad.bind('<Key>', self.validate_input)        
@@ -531,11 +537,11 @@ GOTO x\t      Continue with line x'''
         self.draw_labyr(sample)
         self.instr = ttk.Label(self.mainframe, text=command_help, justify='left', padding=10)
         # Creating buttons
-        self.buttstop = ttk.Button(self.controlframe, text='Stop (F7)', command=self.stopcommand, state='disabled')
-        self.buttstep = ttk.Button(self.controlframe, text='Step (F6)', command=self.stepmode)
-        self.buttrun = ttk.Button(self.controlframe, text='Run (F5)', command=self.runmode)
-        self.buttspdown = ttk.Button(self.speedframe, text='Speed down (F2)', command=self.speed_down)
-        self.buttspup = ttk.Button(self.speedframe, text='Speed up (F3)', command=self.speed_up)
+        self.buttstop = ttk.Button(self.controlframe, text=_('Stop (F7)'), command=self.stopcommand, state='disabled')
+        self.buttstep = ttk.Button(self.controlframe, text=_('Step (F6)'), command=self.stepmode)
+        self.buttrun = ttk.Button(self.controlframe, text=_('Run (F5)'), command=self.runmode)
+        self.buttspdown = ttk.Button(self.speedframe, text=_('Speed down (F2)'), command=self.speed_down)
+        self.buttspup = ttk.Button(self.speedframe, text=_('Speed up (F3)'), command=self.speed_up)
     
         # Placing widgets on the frames with grid geometry manager
 
@@ -578,8 +584,8 @@ GOTO x\t      Continue with line x'''
         self.textPad.delete('1.0', 'end')
 
     def open_command(self, event=None):
-        at_file = self.tkFileDialog.askopenfile(parent=self.root, mode='rb', title='Select a file',
-                                                filetypes=[('AlgoTaurus syntaxes', '*.lab'), ('all files', '.*')])
+        at_file = self.tkFileDialog.askopenfile(parent=self.root, mode='rb', title=_('Select a file'),
+                                                filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), ('all files', '.*')])
         if at_file != None:
             contents = at_file.read()
             self.textPad.delete('1.0', 'end')
@@ -588,7 +594,7 @@ GOTO x\t      Continue with line x'''
 
     def save_command(self, event=None):
         at_file = self.tkFileDialog.asksaveasfile(mode='w', defaultextension='.lab',
-                                                  filetypes=[('AlgoTaurus syntaxes', '*.lab'), ('all files', '.*')],
+                                                  filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), ('all files', '.*')],
                                                   initialfile='lab01.lab')
         if at_file != None:
         # slice off the last character from get, as an extra return is added
@@ -597,12 +603,12 @@ GOTO x\t      Continue with line x'''
             at_file.close()
 
     def exit_command(self, event=None):
-        if self.tkMessageBox.askokcancel('Quit', 'Do you really want to quit?'):
+        if self.tkMessageBox.askokcancel(_('Quit'), _('Do you really want to quit?')):
             self.exit_flag=True
             self.root.destroy()
 
     def about_command(self, event=None):
-        self.tkMessageBox.showinfo('About', u'AlgoTaurus 1.0\nCopyright © 2015 Attila Krajcsi and Ádám Markója')
+        self.tkMessageBox.showinfo('About', _(u'AlgoTaurus 1.0\nCopyright © 2015 Attila Krajcsi and Ádám Markója'))
 
     def sel_all(self, event=None):
         self.textPad.tag_add('sel', '1.0', 'end')
@@ -691,18 +697,18 @@ GOTO x\t      Continue with line x'''
     def speed_up(self, event=None):
         if self.mode == 'step':
              self.rt_prev /= 2
-             self.rt_str.set('Run timer: %s msec' % int(self.rt_prev))
+             self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
         elif self.run_timer > 2:
             self.run_timer /= 2
-            self.rt_str.set('Run timer: %s msec' % int(self.run_timer))
+            self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
 
     def speed_down(self, event=None):
         if self.mode == 'step':
             self.rt_prev *= 2
-            self.rt_str.set('Run timer: %s msec' % int(self.rt_prev))
+            self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
         elif self.run_timer < 500:
             self.run_timer *= 2
-            self.rt_str.set('Run timer: %s msec' % int(self.run_timer))
+            self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
                                                                                                 
     def execute_code(self):
         """Running the script from the coder"""
@@ -714,7 +720,7 @@ GOTO x\t      Continue with line x'''
         edited_text = self.textPad.get('1.0', 'end'+'-1c')
         edited_text = edited_text.rstrip()
         if edited_text == '':
-            result = 'There is no command to execute!'
+            result = _('There is no command to execute!')
         else:
             result = 'go on'
         self.canvas.delete('all')
@@ -723,7 +729,7 @@ GOTO x\t      Continue with line x'''
             try:
                 int(i)
                 if int(i) > lines:
-                    result = 'Wrong code: some reference is larger than number of lines!'
+                    result = _('Wrong code: some reference is larger than number of lines!')
             except:
                 pass
             
