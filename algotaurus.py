@@ -14,7 +14,20 @@ import random
 import time
 import numpy as np
 import sys
+import os
+import appdirs
+import ConfigParser
 
+# Read config file
+dirs = appdirs.AppDirs('algotaurus')
+if not os.path.isfile(dirs.user_config_dir+'/algotaurus.ini'):
+    import shutil
+    if not os.path.exists(dirs.user_config_dir):
+        os.makedirs(dirs.user_config_dir)
+    shutil.copyfile(os.path.dirname(os.path.abspath(__file__))+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
+config = ConfigParser.RawConfigParser()
+config.read(dirs.user_config_dir+'/algotaurus.ini')
+lang = config.get('settings', 'language')
 
 class Labyrinth:
     def __init__(self, x=11, y=11):
