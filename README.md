@@ -39,6 +39,10 @@ Some tasks to solve and discuss:
 - Try to make the code to move as little as possible.
 - Try to minimize the number of lines needed to be executed.
 
+## Localization
+
+If you want to use AlgoTaurus in other languages, you can help translating it on [POEditor](https://poeditor.com/projects/view?id=91267) 
+
 ## Copyright
 
 The game is a remake and an extension of the game Labirint by Lukyanov Konstantin and Volkov Sergey.
