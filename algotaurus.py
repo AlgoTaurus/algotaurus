@@ -435,6 +435,7 @@ class AlgoTaurusGui:
         self.mode = None
         self.execute = False
         self.exit_flag=False
+        self.restart_mainloop = True        
         self.root = tk.Tk()
         self.root.title('AlgoTaurus')
 
@@ -472,10 +473,8 @@ GOTO x\t      Continue with line x''')
 
         # Create menu for the GUI
         languages={_('Hungarian'):'hu', _('English'):'en'}
-        self.restart_mainloop = 0
         self.lang_value = tk.StringVar()
-        self.lang_value.set(language)
-        
+        self.lang_value.set(language)       
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
         self.root.config(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=False)
@@ -596,7 +595,6 @@ GOTO x\t      Continue with line x''')
         config.set('settings', 'language', lang)
         config.write(cfgfile)
         self.code = self.textPad.get('1.0', 'end'+'-1c')
-        self.restart_mainloop = 1
         self.root.destroy()    
     
     def validate_input(self, event):
@@ -630,6 +628,7 @@ GOTO x\t      Continue with line x''')
     def exit_command(self, event=None):
         if self.tkMessageBox.askokcancel(_('Quit'), _('Do you really want to quit?')):
             self.exit_flag=True
+            self.restart_mainloop = False       
             self.root.destroy()
 
     def about_command(self, event=None):
@@ -813,9 +812,8 @@ algotaurus -t
 algotaurus
     run in graphical user interface mode'''
     else:  # Run GUI version
-        read_cfg()
-        root = AlgoTaurusGui()
-        while root.restart_mainloop:
-            code = root.code
+        code, restart_mainloop= '', True
+        while restart_mainloop:
             read_cfg()
             root = AlgoTaurusGui(code=code)
+            code, restart_mainloop = root.code, root.restart_mainloop
