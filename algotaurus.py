@@ -591,9 +591,9 @@ GOTO x\t      Continue with line x''')
 
     # Building menu and coder options
     def change_language(self, event=None):
-        cfgfile = open(dirs.user_config_dir+'/algotaurus.ini','w')
+        cfgfile = open(dirs.user_config_dir+'/algotaurus.ini', 'w')
         lang = self.lang_value.get()
-        config.set('settings','language',lang)
+        config.set('settings', 'language', lang)
         config.write(cfgfile)
         self.code = self.textPad.get('1.0', 'end'+'-1c')
         self.restart_mainloop = 1
