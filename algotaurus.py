@@ -802,6 +802,7 @@ GOTO x\t      Continue with line x''')
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] in ['-t', '-tui']:  # Run TUI version
+            read_cfg()
             labyr = AlgoTaurusTui()
         else:
             print '''Use of AlgoTaurus:
