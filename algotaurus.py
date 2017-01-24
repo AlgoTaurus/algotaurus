@@ -434,7 +434,7 @@ class AlgoTaurusGui:
         self.rt_prev = 0
         self.mode = None
         self.execute = False
-        self.exit_flag = False  
+        self.exit_flag = False
         self.root = tk.Tk()
         self.root.title('AlgoTaurus')
 
@@ -811,7 +811,7 @@ algotaurus -t
 algotaurus
     run in graphical user interface mode'''
     else:  # Run GUI version
-        code, exit_flag= '', False
+        code, exit_flag = '', False
         while not exit_flag:
             read_cfg()
             root = AlgoTaurusGui(code=code)
