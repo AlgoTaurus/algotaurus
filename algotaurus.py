@@ -19,18 +19,19 @@ import appdirs
 import ConfigParser
 import gettext
 
+dirs = appdirs.AppDirs('algotaurus')
+if not os.path.isfile(dirs.user_config_dir+'/algotaurus.ini'):
+    import shutil
+    if not os.path.exists(dirs.user_config_dir):
+        os.makedirs(dirs.user_config_dir)
+    shutil.copyfile(os.path.dirname(os.path.abspath(__file__))+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
+config = ConfigParser.RawConfigParser()
+
 def read_cfg():
+    global language, _
     # Read config file
-    dirs = appdirs.AppDirs('algotaurus')
-    if not os.path.isfile(dirs.user_config_dir+'/algotaurus.ini'):
-        import shutil
-        if not os.path.exists(dirs.user_config_dir):
-            os.makedirs(dirs.user_config_dir)
-        shutil.copyfile(os.path.dirname(os.path.abspath(__file__))+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
-    config = ConfigParser.RawConfigParser()
     config.read(dirs.user_config_dir+'/algotaurus.ini')
     language = config.get('settings', 'language')
-
     # Set language for localization
     t = gettext.translation('algotaurus', os.path.dirname(os.path.abspath(__file__))+'/locale/', [language], fallback=True)
     _ = t.ugettext
