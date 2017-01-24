@@ -470,7 +470,7 @@ QUIT\t      Leave the labyrinth
 GOTO x\t      Continue with line x''')
 
         # Create menu for the GUI
-        languages=['hu','en']
+        languages={'hu':_('Hungarian'),'en':_('English')}
         self.restart_mainloop = 0
         self.lang_value = tk.StringVar()
         self.lang_value.set(language)
@@ -497,7 +497,7 @@ GOTO x\t      Continue with line x''')
         self.languagemenu = tk.Menu(self.optionsmenu, tearoff=False)
         self.optionsmenu.add_cascade(label=_('Language'), menu=self.languagemenu)
         for lang in languages:
-            self.languagemenu.add_radiobutton(label=lang, variable = self.lang_value, value=lang, command=self.change_language)
+            self.languagemenu.add_radiobutton(label=languages[lang], variable = self.lang_value, value=lang, command=self.change_language)
         
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('Help'), menu=self.helpmenu)
