@@ -19,20 +19,21 @@ import appdirs
 import ConfigParser
 import gettext
 
-# Read config file
-dirs = appdirs.AppDirs('algotaurus')
-if not os.path.isfile(dirs.user_config_dir+'/algotaurus.ini'):
-    import shutil
-    if not os.path.exists(dirs.user_config_dir):
-        os.makedirs(dirs.user_config_dir)
-    shutil.copyfile(os.path.dirname(os.path.abspath(__file__))+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
-config = ConfigParser.RawConfigParser()
-config.read(dirs.user_config_dir+'/algotaurus.ini')
-language = config.get('settings', 'language')
+def read_cfg():
+    # Read config file
+    dirs = appdirs.AppDirs('algotaurus')
+    if not os.path.isfile(dirs.user_config_dir+'/algotaurus.ini'):
+        import shutil
+        if not os.path.exists(dirs.user_config_dir):
+            os.makedirs(dirs.user_config_dir)
+        shutil.copyfile(os.path.dirname(os.path.abspath(__file__))+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
+    config = ConfigParser.RawConfigParser()
+    config.read(dirs.user_config_dir+'/algotaurus.ini')
+    language = config.get('settings', 'language')
 
-# Set language for localization
-t = gettext.translation('algotaurus', os.path.dirname(os.path.abspath(__file__))+'/locale/', [language], fallback=True)
-_ = t.ugettext
+    # Set language for localization
+    t = gettext.translation('algotaurus', os.path.dirname(os.path.abspath(__file__))+'/locale/', [language], fallback=True)
+    _ = t.ugettext
 # Only the GUI is localized now, not the TUI
 
 class Labyrinth:
@@ -410,7 +411,7 @@ class AlgoTaurusGui:
     AlgoTaurusGui(size=__, lines=__)
     """
 
-    def __init__(self, size=15, lines=30):
+    def __init__(self, size=15, lines=30, code=''):
         import os
         import Tkinter as tk
         import tkFileDialog
@@ -425,6 +426,7 @@ class AlgoTaurusGui:
         # Initial parameters
         self.size = size
         self.lines = lines
+        self.code = code
         self.x = 27
         self.y = 27
         self.run_timer = 5.0
@@ -468,6 +470,11 @@ QUIT\t      Leave the labyrinth
 GOTO x\t      Continue with line x''')
 
         # Create menu for the GUI
+        languages=['hu','en']
+        self.restart_mainloop = 0
+        self.lang_value = tk.StringVar()
+        self.lang_value.set(language)
+        
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
         self.root.config(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=False)
@@ -484,6 +491,14 @@ GOTO x\t      Continue with line x''')
         self.editmenu.add_command(label=_('Paste'), command=self.paste_command, accelerator='Ctrl+V')
         self.editmenu.add_separator()
         self.editmenu.add_command(label=_('Select All'), command=self.sel_all, accelerator='Ctrl+A')
+        
+        self.optionsmenu = tk.Menu(self.menu, tearoff=False)
+        self.menu.add_cascade(label=_('Options'), menu=self.optionsmenu)
+        self.languagemenu = tk.Menu(self.optionsmenu, tearoff=False)
+        self.optionsmenu.add_cascade(label=_('Language'), menu=self.languagemenu)
+        for lang in languages:
+            self.languagemenu.add_radiobutton(label=lang, variable = self.lang_value, value=lang, command=self.change_language)
+        
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('Help'), menu=self.helpmenu)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
@@ -574,6 +589,15 @@ GOTO x\t      Continue with line x''')
         self.root.mainloop()
 
     # Building menu and coder options
+    def change_language(self, event=None):
+        cfgfile = open(dirs.user_config_dir+'/algotaurus.ini','w')
+        lang = self.lang_value.get()
+        config.set('settings','language',lang)
+        config.write(cfgfile)
+        self.code = self.textPad.get('1.0', 'end'+'-1c')
+        self.restart_mainloop = 1
+        self.root.destroy()    
+    
     def validate_input(self, event):
         lines = self.textPad.index('end').split('.')[0]
         if lines > self.lines+2:
@@ -788,4 +812,9 @@ algotaurus -t
 algotaurus
     run in graphical user interface mode'''
     else:  # Run GUI version
+        read_cfg()
         root = AlgoTaurusGui()
+        while root.restart_mainloop:
+            code = root.code
+            read_cfg()
+            root = AlgoTaurusGui(code=code)
