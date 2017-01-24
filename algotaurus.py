@@ -434,8 +434,7 @@ class AlgoTaurusGui:
         self.rt_prev = 0
         self.mode = None
         self.execute = False
-        self.exit_flag=False
-        self.restart_mainloop = True        
+        self.exit_flag = False  
         self.root = tk.Tk()
         self.root.title('AlgoTaurus')
 
@@ -627,8 +626,7 @@ GOTO x\t      Continue with line x''')
 
     def exit_command(self, event=None):
         if self.tkMessageBox.askokcancel(_('Quit'), _('Do you really want to quit?')):
-            self.exit_flag=True
-            self.restart_mainloop = False       
+            self.exit_flag = True
             self.root.destroy()
 
     def about_command(self, event=None):
@@ -812,8 +810,8 @@ algotaurus -t
 algotaurus
     run in graphical user interface mode'''
     else:  # Run GUI version
-        code, restart_mainloop= '', True
-        while restart_mainloop:
+        code, exit_flag= '', False
+        while not exit_flag:
             read_cfg()
             root = AlgoTaurusGui(code=code)
-            code, restart_mainloop = root.code, root.restart_mainloop
+            code, exit_flag = root.code, root.exit_flag
