@@ -82,10 +82,11 @@ class Robot:
 
     Operate the robot with various commands.
     """
-    def __init__(self, labyr):
+    def __init__(self, labyr, success=False):
         """labyr: Labyrinth object
         """
         self.labyr = labyr.labyr
+        self.success = success
         
         # Place the robot somewhere in the middle
         while True:
@@ -133,6 +134,7 @@ class Robot:
     
     def robot_quit(self):
         if self.labyr[tuple(self.facing_pos)] == 2:
+            self.success = True            
             return _('Congratulations! AlgoTaurus successfully reached the exit.')
         else:
             return _('Game over. AlgoTaurus was not in the exit yet.')
@@ -816,7 +818,10 @@ GOTO x\t      Continue with line x''')
             self.linebox.delete(current_pos)
             self.linebox.configure(state='disabled')
             if not self.stop:
-                self.tkMessageBox.showinfo('Result', result)
+                if robot.success:
+                    self.tkMessageBox.showinfo('Result', result)
+                else:
+                    self.tkMessageBox.showwarning('Result', result)
             self.buttstop.configure(state='disabled')
             self.buttstep.configure(state='normal')
             self.buttrun.configure(state='normal')
