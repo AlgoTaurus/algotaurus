@@ -429,7 +429,7 @@ class AlgoTaurusGui:
         self.code = code
         self.maze_rows = maze_rows
         self.maze_columns = maze_columns
-        self.size = min(450 / maze_columns, 550 / maze_rows)
+        self.size = min(450 / maze_columns, 550 / maze_rows, 25)
         self.run_timer = 5.0
         self.rt_prev = 0
         self.mode = None
