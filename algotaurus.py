@@ -412,7 +412,7 @@ class AlgoTaurusGui:
     AlgoTaurusGui(size=__, lines=__)
     """
 
-    def __init__(self, size=15, lines=30, code=''):
+    def __init__(self, maze_rows=30, maze_columns=30, lines=30, code=''):
         import os
         import Tkinter as tk
         import tkFileDialog
@@ -425,11 +425,11 @@ class AlgoTaurusGui:
         self.tkMessageBox = tkMessageBox
 
         # Initial parameters
-        self.size = size
         self.lines = lines
         self.code = code
-        self.x = 27
-        self.y = 27
+        self.maze_rows = maze_rows
+        self.maze_columns = maze_columns
+        self.size = 450 / maze_columns
         self.run_timer = 5.0
         self.rt_prev = 0
         self.mode = None
@@ -473,7 +473,11 @@ GOTO x\t      Continue with line x''')
         # Create menu for the GUI
         languages={_('Hungarian'):'hu', _('English'):'en'}
         self.lang_value = tk.StringVar()
-        self.lang_value.set(language)       
+        self.rows_value = tk.StringVar()
+        self.cols_value = tk.StringVar()        
+        self.lang_value.set(language)
+        self.rows_value.set(self.maze_rows)
+        self.cols_value.set(self.maze_columns)        
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
         self.root.config(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=False)
@@ -496,7 +500,16 @@ GOTO x\t      Continue with line x''')
         self.optionsmenu.add_cascade(label=_('Language'), menu=self.languagemenu)
         for lang in sorted(languages.keys()):
             self.languagemenu.add_radiobutton(label=lang, variable = self.lang_value, value=languages[lang],
-                                              command=self.change_language)        
+                                              command=self.change_language)
+        self.sizemenu = tk.Menu(self.optionsmenu, tearoff=False)
+        self.optionsmenu.add_cascade(label=_('Maze size'), menu=self.sizemenu)
+        self.mazerowsmenu = tk.Menu(self.sizemenu, tearoff=False)
+        self.mazecolsmenu = tk.Menu(self.sizemenu, tearoff=False)
+        self.sizemenu.add_cascade(label=_('Rows'), menu=self.mazerowsmenu)
+        self.sizemenu.add_cascade(label=_('Columns'), menu=self.mazecolsmenu)
+        for i in range(10, 55, 5):
+            self.mazerowsmenu.add_radiobutton(label=i, variable=self.rows_value, value=i, command=self.change_rownum)
+            self.mazecolsmenu.add_radiobutton(label=i, variable=self.cols_value, value=i, command=self.change_colnum)            
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('Help'), menu=self.helpmenu)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
@@ -544,8 +557,8 @@ GOTO x\t      Continue with line x''')
         self.textPad.bind('<Button-3>', self.rclick)
         self.textPad.bind('<Key>', self.validate_input)        
         # Creating canvas and drawing sample labyrinth
-        self.canvas = tk.Canvas(self.mainframe, width=self.size*(self.x+4), height=self.size*(self.y+4))
-        samplab = Labyrinth(self.x, self.y)
+        self.canvas = tk.Canvas(self.mainframe, width=self.size*(self.maze_rows + 4), height=self.size * (self.maze_columns + 4))
+        samplab = Labyrinth(self.maze_rows, self.maze_columns)
         sample = samplab.labyr
         Robot(samplab)
         self.draw_labyr(sample)
@@ -579,7 +592,7 @@ GOTO x\t      Continue with line x''')
         self.root.update()
         w, h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
         winw, winh = self.root.winfo_width(), self.root.winfo_height()
-        self.padding = (winw-self.x*(self.size-1), winh-self.y*(self.size-1))
+        self.padding = (winw - self.maze_rows * (self.size - 1), winh - self.maze_columns * (self.size - 1))
         size = tuple(int(numb)+30 for numb in self.root.geometry().split('+')[0].split('x'))
         x = w/2 - size[0]/2
         y = h/2 - size[1]/2
@@ -595,7 +608,17 @@ GOTO x\t      Continue with line x''')
         config.write(cfgfile)
         self.code = self.textPad.get('1.0', 'end'+'-1c')
         self.root.destroy()    
-    
+
+    def change_rownum(self, event=None):
+        self.maze_rows = int(self.rows_value.get())
+        self.code = self.textPad.get('1.0', 'end'+'-1c')
+        self.root.destroy()
+
+    def change_colnum(self, event=None):
+        self.maze_columns = int(self.cols_value.get())
+        self.code = self.textPad.get('1.0', 'end'+'-1c')
+        self.root.destroy()        
+        
     def validate_input(self, event):
         lines = self.textPad.index('end').split('.')[0]
         if lines > self.lines+2:
@@ -758,11 +781,11 @@ GOTO x\t      Continue with line x''')
         # Resizing labyrinth to fit to the current window size
         self.root.update()
         w, h = self.root.winfo_width(), self.root.winfo_height()
-        self.x, self.y = (w-self.padding[0])/self.size, (h-self.padding[1])/self.size
-        self.canvas.configure(width=self.size*(self.x+4), height=self.size*(self.y+4))
+        self.maze_rows, self.maze_columns = (w - self.padding[0]) / self.size, (h - self.padding[1]) / self.size
+        self.canvas.configure(width=self.size*(self.maze_rows + 4), height=self.size * (self.maze_columns + 4))
         self.root.update()
         # Drawing the labyrinth
-        lab = Labyrinth(self.x, self.y)
+        lab = Labyrinth(self.maze_rows, self.maze_columns)
         labyr = lab.labyr
         robot = Robot(lab)
         script = Script(edited_text, robot, max_line=lines)
@@ -812,7 +835,9 @@ algotaurus
     run in graphical user interface mode'''
     else:  # Run GUI version
         code, exit_flag = '', False
+        maze_rows, maze_columns = 30, 30        
         while not exit_flag:
             read_cfg()
-            root = AlgoTaurusGui(code=code)
+            root = AlgoTaurusGui(code=code, maze_rows=maze_rows, maze_columns=maze_columns)
+            maze_rows, maze_columns = root.maze_rows, root.maze_columns
             code, exit_flag = root.code, root.exit_flag
