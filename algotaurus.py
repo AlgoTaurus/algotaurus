@@ -596,7 +596,7 @@ GOTO x\t      Continue with line x''')
         size = tuple(int(numb)+30 for numb in self.root.geometry().split('+')[0].split('x'))
         x = w/2 - size[0]/2
         y = h/2 - size[1]/2
-        self.root.geometry("%dx%d+%d+%d" % (size + (x, y)))
+        self.root.geometry("%dx%d+%d+%d" % (size + (x, y - 50)))
         self.root.minsize(winw, winh)
         self.root.mainloop()
 
