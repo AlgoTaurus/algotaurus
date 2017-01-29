@@ -160,6 +160,7 @@ class Script:
         self.robot = robot
         self.current_line = 1
         self.max_line = max_line
+        self.error = False
         
     def execute_command(self):
         """Execute a single line.
@@ -179,6 +180,7 @@ class Script:
 
         # Check if command is correct
         if not (command in ['step', 'right', 'left', 'wall?', 'exit?', 'quit', 'goto']):
+            self.error = True
             return _('Syntax error. Unknown command.')
         
         # Run the command
@@ -195,21 +197,25 @@ class Script:
             return 'go on'
         elif command == 'wall?':
             if len(params) < 2:
+                self.error = True
                 return _('Syntax error. Wall test needs two parameters.')
             try:
                 yes_line = int(params[0])
                 no_line = int(params[1])
             except:
+                self.error = True
                 return _('Syntax error. Wall test needs two numbers.')
             self.current_line = yes_line if self.robot.wall() else no_line
             return 'go on'
         elif command == 'exit?':
             if len(params) < 2:
+                self.error = True
                 return _('Syntax error. Exit test needs two parameters.')
             try:
                 yes_line = int(params[0])
                 no_line = int(params[1])
             except:
+                self.error = True
                 return _('Syntax error. Exit test needs two numbers.')
             self.current_line = yes_line if self.robot.robot_exit() else no_line
             return 'go on'
@@ -217,10 +223,12 @@ class Script:
             return self.robot.robot_quit()
         elif command == 'goto':
             if len(params) == 0:
+                self.error = True
                 return _('Syntax error. Goto command needs a parameter.')
             try:
                 self.current_line = int(params[0])
             except:
+                self.error = True
                 return _('Syntax error. Goto command needs a number.')
             return 'go on'
 
@@ -820,8 +828,10 @@ GOTO x\t      Continue with line x''')
             if not self.stop:
                 if robot.success:
                     self.tkMessageBox.showinfo(_('Result'), result)
+                elif script.error:
+                    self.tkMessageBox.showinfo(_('Error'), result, icon='error')
                 else:
-                    self.tkMessageBox.showinfo(_('Result'), result, icon='error')
+                    self.tkMessageBox.showinfo(_('Result'), result, icon='warning')
             self.buttstop.configure(state='disabled')
             self.buttstep.configure(state='normal')
             self.buttrun.configure(state='normal')
