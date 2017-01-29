@@ -819,9 +819,9 @@ GOTO x\t      Continue with line x''')
             self.linebox.configure(state='disabled')
             if not self.stop:
                 if robot.success:
-                    self.tkMessageBox.showinfo('Result', result)
+                    self.tkMessageBox.showinfo(_('Result'), result)
                 else:
-                    self.tkMessageBox.showwarning('Result', result)
+                    self.tkMessageBox.showwarning(_('Result'), result)
             self.buttstop.configure(state='disabled')
             self.buttstep.configure(state='normal')
             self.buttrun.configure(state='normal')
