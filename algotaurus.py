@@ -429,7 +429,7 @@ class AlgoTaurusGui:
         self.code = code
         self.maze_rows = maze_rows
         self.maze_columns = maze_columns
-        self.size = 450 / maze_columns
+        self.size = min(450 / maze_columns, 550 / maze_rows)
         self.run_timer = 5.0
         self.rt_prev = 0
         self.mode = None
@@ -602,22 +602,24 @@ GOTO x\t      Continue with line x''')
 
     # Building menu and coder options
     def change_language(self, event=None):
-        cfgfile = open(dirs.user_config_dir+'/algotaurus.ini', 'w')
-        lang = self.lang_value.get()
-        config.set('settings', 'language', lang)
-        config.write(cfgfile)
-        self.code = self.textPad.get('1.0', 'end'+'-1c')
-        self.root.destroy()    
+        if language != self.lang_value.get():
+            cfgfile = open(dirs.user_config_dir+'/algotaurus.ini', 'w')
+            config.set('settings', 'language', self.lang_value.get())
+            config.write(cfgfile)
+            self.code = self.textPad.get('1.0', 'end'+'-1c')
+            self.root.destroy()    
 
     def change_rownum(self, event=None):
-        self.maze_rows = int(self.rows_value.get())
-        self.code = self.textPad.get('1.0', 'end'+'-1c')
-        self.root.destroy()
+        if self.maze_rows != int(self.rows_value.get())
+            self.maze_rows = int(self.rows_value.get())
+            self.code = self.textPad.get('1.0', 'end'+'-1c')
+            self.root.destroy()
 
     def change_colnum(self, event=None):
-        self.maze_columns = int(self.cols_value.get())
-        self.code = self.textPad.get('1.0', 'end'+'-1c')
-        self.root.destroy()        
+        if self.maze_columns != int(self.cols_value.get()):
+            self.maze_columns = int(self.cols_value.get())
+            self.code = self.textPad.get('1.0', 'end'+'-1c')
+            self.root.destroy()        
         
     def validate_input(self, event):
         lines = self.textPad.index('end').split('.')[0]
