@@ -82,11 +82,11 @@ class Robot:
 
     Operate the robot with various commands.
     """
-    def __init__(self, labyr, success=False):
+    def __init__(self, labyr):
         """labyr: Labyrinth object
         """
         self.labyr = labyr.labyr
-        self.success = success
+        self.success = False
         
         # Place the robot somewhere in the middle
         while True:
