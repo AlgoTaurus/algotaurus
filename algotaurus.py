@@ -821,7 +821,7 @@ GOTO x\t      Continue with line x''')
                 if robot.success:
                     self.tkMessageBox.showinfo(_('Result'), result)
                 else:
-                    self.tkMessageBox.showwarning(_('Result'), result)
+                    self.tkMessageBox.showinfo(_('Result'), result, icon='error')
             self.buttstop.configure(state='disabled')
             self.buttstep.configure(state='normal')
             self.buttrun.configure(state='normal')
