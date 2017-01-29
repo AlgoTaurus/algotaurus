@@ -491,7 +491,7 @@ GOTO x\t      Continue with line x''')
         self.editmenu.add_separator()
         self.editmenu.add_command(label=_('Select All'), command=self.sel_all, accelerator='Ctrl+A')        
         self.optionsmenu = tk.Menu(self.menu, tearoff=False)
-        self.menu.add_cascade(label=_('Options'), menu=self.optionsmenu)
+        self.menu.add_cascade(label=_('Preferences'), menu=self.optionsmenu)
         self.languagemenu = tk.Menu(self.optionsmenu, tearoff=False)
         self.optionsmenu.add_cascade(label=_('Language'), menu=self.languagemenu)
         for lang in sorted(languages.keys()):
