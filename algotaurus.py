@@ -610,7 +610,7 @@ GOTO x\t      Continue with line x''')
             self.root.destroy()    
 
     def change_rownum(self, event=None):
-        if self.maze_rows != int(self.rows_value.get())
+        if self.maze_rows != int(self.rows_value.get()):
             self.maze_rows = int(self.rows_value.get())
             self.code = self.textPad.get('1.0', 'end'+'-1c')
             self.root.destroy()
