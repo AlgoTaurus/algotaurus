@@ -784,7 +784,7 @@ GOTO x\t      Continue with line x''')
             result = 'go on'
         self.canvas.delete('all')
         lines = edited_text.count('\n')+1
-        for i in edited_text:
+        for i in edited_text.split(' '):
             try:
                 int(i)
                 if int(i) > lines:
