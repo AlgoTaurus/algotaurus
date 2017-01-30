@@ -608,6 +608,7 @@ GOTO x\t      Continue with line x''')
         y = h/2 - size[1]/2
         self.root.geometry("%dx%d+%d+%d" % (size + (x, y - 50)))
         self.root.minsize(winw, winh)
+        self.root.focus_force()
         self.textPad.focus()
         self.root.mainloop()
 
