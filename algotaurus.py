@@ -11,6 +11,7 @@ AlgoTaurus is distributed under the terms of the GNU General Public License 3.
 """
 
 import random
+import re
 import time
 import numpy as np
 import sys
@@ -786,7 +787,7 @@ GOTO x\t      Continue with line x''')
             result = 'go on'
         self.canvas.delete('all')
         lines = edited_text.count('\n')+1
-        for i in edited_text.split(' '):
+        for i in re.split(' |\n', edited_text):
             try:
                 int(i)
                 if int(i) > lines:
