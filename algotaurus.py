@@ -779,6 +779,7 @@ GOTO x\t      Continue with line x''')
         edited_text = self.textPad.get('1.0', 'end'+'-1c')
         edited_text = edited_text.rstrip()
         if edited_text == '':
+            script_error = False
             result = _('There is no command to execute!')
         else:
             result = 'go on'
@@ -788,6 +789,7 @@ GOTO x\t      Continue with line x''')
             try:
                 int(i)
                 if int(i) > lines:
+                    script_error = False
                     result = _('Wrong code: some reference is larger than number of lines!')
             except:
                 pass
@@ -830,7 +832,7 @@ GOTO x\t      Continue with line x''')
             if not self.stop:
                 if robot.success:
                     self.tkMessageBox.showinfo(_('Result'), result)
-                elif script.error:
+                elif script.error or script_error:
                     self.tkMessageBox.showinfo(_('Error'), result, icon='error')
                 else:
                     self.tkMessageBox.showinfo(_('Result'), result, icon='warning')
