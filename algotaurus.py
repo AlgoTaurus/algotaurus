@@ -564,13 +564,13 @@ GOTO x\t      Continue with line x''')
         self.timerlabel = ttk.Label(self.speedframe, textvariable=self.rt_str)
         self.textPad.bind('<Button-3>', self.rclick)
         self.textPad.bind('<Key>', self.validate_input)        
-        # Creating canvas and drawing sample labyrinth
+        # Creating canvas and drawing the labyrinth
         self.canvas = tk.Canvas(self.mainframe, width=self.size*(self.maze_rows + 4), height=self.size * (self.maze_columns + 4))
-        samplab = Labyrinth(self.maze_rows, self.maze_columns)
-        sample = samplab.labyr
-        Robot(samplab)
-        self.draw_labyr(sample)
-        self.instr = ttk.Label(self.mainframe, text=command_help, justify='left', padding=10)
+        self.labyr = Labyrinth(self.maze_rows, self.maze_columns)
+        self.robot = Robot(self.labyr)
+        self.robot_face = self.labyr.labyr.max()
+        self.robot_pos = np.where(self.labyr.labyr == self.robot_face)        
+        self.draw_labyr(self.labyr.labyr)        self.instr = ttk.Label(self.mainframe, text=command_help, justify='left', padding=10)
         # Creating buttons
         self.buttstop = ttk.Button(self.controlframe, text=_('Stop (F7)'), command=self.stopcommand, state='disabled')
         self.buttstep = ttk.Button(self.controlframe, text=_('Step (F6)'), command=self.stepmode)
@@ -648,12 +648,14 @@ GOTO x\t      Continue with line x''')
             at_file.close()
 
     def exit_command(self, event=None):
-        if self.tkMessageBox.askokcancel(_('Quit'), _('Do you really want to quit?')):
+        if AlgoTaurusMessageBox(title=_('Quit'), message=_('Do you really want to quit?'),
+                            icon='surprised_bull.png').askokcancel():
             self.exit_flag = True
             self.root.destroy()
 
     def about_command(self, event=None):
-        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus 1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'))
+        AlgoTaurusMessageBox(title=_('About'), message=_(u'AlgoTaurus 1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'),
+                             icon='maze.png').showinfo()
 
     def sel_all(self, event=None):
         self.textPad.tag_add('sel', '1.0', 'end')
@@ -717,6 +719,7 @@ GOTO x\t      Continue with line x''')
     # Button commands
     def stopcommand(self, event=None):
         self.stop = 1
+        self.restore_robot()
         if self.rt_prev:
             self.run_timer = self.rt_prev
             
@@ -755,6 +758,21 @@ GOTO x\t      Continue with line x''')
             self.run_timer *= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
 
+    def restore_robot(self):
+        self.labyr.labyr[self.labyr.labyr > 2] = 0
+        self.labyr.labyr[self.robot_pos] = self.robot_face
+        self.robot.pos = np.append(self.robot_pos[0], self.robot_pos[1])
+        self.robot.dir = self.robot_face - 10
+        self.draw_labyr(self.labyr.labyr)
+
+    def new_labyr(self, event=None):
+        self.labyr = Labyrinth(self.maze_rows, self.maze_columns)
+        self.robot = Robot(self.labyr)
+        self.robot_face = self.labyr.labyr.max()
+        self.robot_pos = np.where(self.labyr.labyr == self.robot_face)
+        self.draw_labyr(self.labyr.labyr)
+        self.canvas.update()            
+            
     def size_toolbox(self, event=None):
         window = self.tk.Toplevel(self.root)
         window.attributes("-toolwindow",1)
@@ -774,11 +792,9 @@ GOTO x\t      Continue with line x''')
         f2 = self.tk.Frame(window)
         f1.pack()
         f2.pack(fill='x')
-
         image = self.ImageTk.PhotoImage(self.Image.open('toolbox.png').resize((100, 100), self.Image.ANTIALIAS))
         imglabel = self.tk.Label(f1, image=image, bg='white')
         imglabel.image = image
-
         imglabel.grid(row=0, column=0, rowspan=3, padx = 20, pady = 20, sticky='e')    
         self.tk.Label(f1, text=_('Adjust the size of the maze:'), bg='white',
                       font=("Helvetia", 12)).grid(row=0, column=1, columnspan=2, pady=10, padx=10)
@@ -839,16 +855,10 @@ GOTO x\t      Continue with line x''')
                 pass
             
         # Resizing labyrinth to fit to the current window size
-        self.root.update()
         w, h = self.root.winfo_width(), self.root.winfo_height()
         self.canvas.configure(width=self.size*(self.maze_rows + 4), height=self.size * (self.maze_columns + 4))
-        self.root.update()
-        # Drawing the labyrinth
-        lab = Labyrinth(self.maze_rows, self.maze_columns)
-        labyr = lab.labyr
-        robot = Robot(lab)
-        script = Script(edited_text, robot, max_line=lines)
-        self.draw_labyr(labyr)
+        script = Script(edited_text, self.robot, max_line=lines)
+        self.draw_labyr(self.labyr.labyr)
         self.canvas.update()
         self.canvas.after(1000)
         current_pos = 'end'
@@ -861,7 +871,7 @@ GOTO x\t      Continue with line x''')
                 self.linebox.insert(current_pos, '>')
                 self.linebox.config(state='disabled')
                 result = script.execute_command()
-                self.move_robot(labyr)
+                self.move_robot(self.labyr.labyr)
                 if self.mode == 'step':
                     self.step = 0
             else:
@@ -873,18 +883,89 @@ GOTO x\t      Continue with line x''')
             self.linebox.delete(current_pos)
             self.linebox.configure(state='disabled')
             if not self.stop:
-                if robot.success:
-                    self.tkMessageBox.showinfo(_('Result'), result)
+                if self.robot.success:
+                    icon, title = 'happy_bull.png', _('Result')
+                    self.new_labyr()
                 elif script.error or script_error:
-                    self.tkMessageBox.showinfo(_('Error'), result, icon='error')
+                    icon, title = 'bull_red_flag.png', _('Error')
+                    self.restore_robot()
                 else:
-                    self.tkMessageBox.showinfo(_('Result'), result, icon='warning')
+                    icon, title = 'angry_bull.png', _('Result')
+                    self.restore_robot()
+                AlgoTaurusMessageBox(parent=self.root, title=title, message=result, icon=icon).showinfo()
             self.buttstop.configure(state='disabled')
             self.buttstep.configure(state='normal')
             self.buttrun.configure(state='normal')
             self.textPad.configure(state='normal', bg='white')
             self.execute = False
 
+class AlgoTaurusMessageBox():
+
+    def __init__(self, parent=None, title=None, message=None, icon=None):
+        import Tkinter as tk
+        import ttk
+        from PIL import ImageTk, Image
+        self.tk = tk
+        self.ttk = ttk
+        self.ImageTk = ImageTk
+        self.Image = Image
+
+        self.var = True
+        self.parent = parent
+        self.window = tk.Toplevel(parent)
+        self.message = message
+        self.title = title
+        self.image = ImageTk.PhotoImage(self.Image.open(icon).resize((100, 100), Image.ANTIALIAS))
+        self.window.attributes("-toolwindow",1)
+        self.window.wm_title(self.title)
+        self.window.resizable(0,0)
+
+    def ok_cmd(self, event=None):
+        self.window.destroy()
+        self.var = True
+
+    def cancel_cmd(self, event=None):
+        self.window.destroy()
+        self.var = False
+
+    def draw_message(self, buttons=1):
+        f1 = self.tk.Frame(self.window, bg='white')
+        f2 = self.tk.Frame(self.window)
+        f1.pack()
+        f2.pack(fill='x')
+        imglabel = self.tk.Label(f1, image = self.image, bg='white')
+        imglabel.image = self.image
+        imglabel.grid(row=0, column=0, padx = 20, pady = 20, sticky='e')
+        self.tk.Label(f1, text=self.message, font=("Helvetia", 12), bg='white', justify='left').grid(row=0, column=1, padx = 10)
+        ok_side = 'right'
+        if buttons > 1:
+            btn_cancel = self.ttk.Button(f2, text=_('Cancel'), command=self.cancel_cmd)
+            btn_cancel.bind('<Return>', self.cancel_cmd)
+            btn_cancel.pack(side = 'right', padx=10, pady=10)
+            btn_cancel.focus_set()
+            ok_side = 'left'
+        btn_ok = self.ttk.Button(f2, text='OK', command=self.ok_cmd)
+        btn_ok.bind('<Return>', self.ok_cmd)
+        btn_ok.pack(side=ok_side, padx=10, pady=10)
+        if buttons == 1:
+            btn_ok.focus_set()
+        else:
+            self.window.bind('<Left>', lambda event: btn_ok.focus_set())
+            self.window.bind('<Right>', lambda event: btn_cancel.focus_set())
+        self.window.bind('<Escape>', self.cancel_cmd)
+        x = (self.window.winfo_screenwidth() - self.window.winfo_reqwidth()) / 2
+        y = (self.window.winfo_screenheight() - self.window.winfo_reqheight()) / 2
+        self.window.geometry("+%d+%d" % (x-150, y))
+        self.window.focus()
+        self.window.grab_set()
+        self.window.wait_window()
+        return self.var
+
+    def showinfo(self):
+        return self.draw_message(1)
+
+    def askokcancel(self):
+        return self.draw_message(2)            
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
