@@ -781,10 +781,13 @@ GOTO x\t      Continue with line x''')
         imglabel.image = image
 
         imglabel.grid(row=0, column=0, rowspan=3, padx = 20, pady = 20, sticky='e')    
-        self.tk.Label(f1, text=_('Adjust the size of the maze:'), bg='white', font=("Helvetia", 12)).grid(row=0, column=1, columnspan=2, pady=10, padx=10)#, sticky=)
-        self.tk.Label(f1, text=_('Number of rows'), bg='white', font=("Helvetia", 12)).grid(row=1, column=1, pady=10, sticky='e')
+        self.tk.Label(f1, text=_('Adjust the size of the maze:'), bg='white',
+                      font=("Helvetia", 12)).grid(row=0, column=1, columnspan=2, pady=10, padx=10)
+        self.tk.Label(f1, text=_('Number of rows'), bg='white',
+                      font=("Helvetia", 12)).grid(row=1, column=1, pady=10, sticky='e')
         row_box = self.ttk.Combobox(f1, values=range(5,55,5), state='readonly', width=3)
-        self.tk.Label(f1, text=_('Number of columns'), bg='white', font=("Helvetia", 12)).grid(row=2, column=1, pady=10, sticky='e')
+        self.tk.Label(f1, text=_('Number of columns'), bg='white',
+                      font=("Helvetia", 12)).grid(row=2, column=1, pady=10, sticky='e')
         col_box = self.ttk.Combobox(f1, values=range(5,55,5), state='readonly', width=3)
         try:
             row_box.current(range(5,55,5).index(self.maze_rows))
