@@ -799,7 +799,6 @@ GOTO x\t      Continue with line x''')
         # Resizing labyrinth to fit to the current window size
         self.root.update()
         w, h = self.root.winfo_width(), self.root.winfo_height()
-        self.maze_rows, self.maze_columns = (w - self.padding[0]) / self.size, (h - self.padding[1]) / self.size
         self.canvas.configure(width=self.size*(self.maze_rows + 4), height=self.size * (self.maze_columns + 4))
         self.root.update()
         # Drawing the labyrinth
