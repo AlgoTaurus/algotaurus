@@ -516,7 +516,6 @@ GOTO x\t      Continue with line x''')
         for lang in sorted(languages.keys()):
             self.languagemenu.add_radiobutton(label=lang, variable = self.lang_value, value=languages[lang],
                                               command=self.change_language)
-        self.sizemenu = tk.Menu(self.prefsmenu, tearoff=False)
         self.prefsmenu.add_command(label=_('Maze size'), command=self.size_toolbox)
         
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
