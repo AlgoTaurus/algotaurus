@@ -617,19 +617,7 @@ GOTO x\t      Continue with line x''')
             config.set('settings', 'language', self.lang_value.get())
             config.write(cfgfile)
             self.code = self.textPad.get('1.0', 'end'+'-1c')
-            self.root.destroy()    
-
-    def change_rownum(self, event=None):
-        if self.maze_rows != int(self.rows_value.get()):
-            self.maze_rows = int(self.rows_value.get())
-            self.code = self.textPad.get('1.0', 'end'+'-1c')
-            self.root.destroy()
-
-    def change_colnum(self, event=None):
-        if self.maze_columns != int(self.cols_value.get()):
-            self.maze_columns = int(self.cols_value.get())
-            self.code = self.textPad.get('1.0', 'end'+'-1c')
-            self.root.destroy()        
+            self.root.destroy()  
         
     def validate_input(self, event):
         lines = self.textPad.index('end').split('.')[0]
