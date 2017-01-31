@@ -429,11 +429,14 @@ class AlgoTaurusGui:
         import tkFileDialog
         import tkMessageBox
         import ttk
+        from PIL import ImageTk, Image
 
         self.tk = tk
         self.ttk = ttk
         self.tkFileDialog = tkFileDialog
         self.tkMessageBox = tkMessageBox
+        self.ImageTk = ImageTk
+        self.Image = Image        
 
         # Initial parameters
         self.lines = lines
@@ -513,14 +516,8 @@ GOTO x\t      Continue with line x''')
             self.languagemenu.add_radiobutton(label=lang, variable = self.lang_value, value=languages[lang],
                                               command=self.change_language)
         self.sizemenu = tk.Menu(self.prefsmenu, tearoff=False)
-        self.prefsmenu.add_cascade(label=_('Maze size'), menu=self.sizemenu)
-        self.mazerowsmenu = tk.Menu(self.sizemenu, tearoff=False)
-        self.mazecolsmenu = tk.Menu(self.sizemenu, tearoff=False)
-        self.sizemenu.add_cascade(label=_('Rows'), menu=self.mazerowsmenu)
-        self.sizemenu.add_cascade(label=_('Columns'), menu=self.mazecolsmenu)
-        for i in range(10, 55, 5):
-            self.mazerowsmenu.add_radiobutton(label=i, variable=self.rows_value, value=i, command=self.change_rownum)
-            self.mazecolsmenu.add_radiobutton(label=i, variable=self.cols_value, value=i, command=self.change_colnum)            
+        self.prefsmenu.add_command(label=_('Maze size'), command=self.size_toolbox)
+        
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('Help'), menu=self.helpmenu)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
@@ -769,7 +766,61 @@ GOTO x\t      Continue with line x''')
         elif self.run_timer < 500:
             self.run_timer *= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
-                                                                                                
+
+    def size_toolbox(self, event=None):
+        window = self.tk.Toplevel(self.root)
+        window.attributes("-toolwindow",1)
+        window.wm_title('Settings')
+        window.resizable(0,0)               
+        def ok_cmd(event=None):
+            if (self.maze_rows != int(row_box.get()) or self.maze_columns != int(col_box.get())):
+                self.maze_rows, self.maze_columns = int(row_box.get()), int(col_box.get())
+                self.code = self.textPad.get('1.0', 'end'+'-1c')
+                self.root.eval('::ttk::CancelRepeat')
+                self.root.destroy() 
+            else:
+                window.destroy()            
+        def cancel_cmd(event=None):
+            window.destroy()
+        f1 = self.tk.Frame(window, bg='white')
+        f2 = self.tk.Frame(window)
+        f1.pack()
+        f2.pack(fill='x')
+
+        image = self.ImageTk.PhotoImage(self.Image.open('toolbox.png').resize((100, 100), self.Image.ANTIALIAS))
+        imglabel = self.tk.Label(f1, image=image, bg='white')
+        imglabel.image = image
+
+        imglabel.grid(row=0, column=0, rowspan=3, padx = 20, pady = 20, sticky='e')    
+        self.tk.Label(f1, text=_('Adjust the size of the maze:'), bg='white', font=("Helvetia", 12)).grid(row=0, column=1, columnspan=2, pady=10, padx=10)#, sticky=)
+        self.tk.Label(f1, text=_('Number of rows'), bg='white', font=("Helvetia", 12)).grid(row=1, column=1, pady=10, sticky='e')
+        row_box = self.ttk.Combobox(f1, values=range(5,55,5), state='readonly', width=3)
+        self.tk.Label(f1, text=_('Number of columns'), bg='white', font=("Helvetia", 12)).grid(row=2, column=1, pady=10, sticky='e')
+        col_box = self.ttk.Combobox(f1, values=range(5,55,5), state='readonly', width=3)
+        try:
+            row_box.current(range(5,55,5).index(self.maze_rows))
+            col_box.current(range(5,55,5).index(self.maze_columns))
+        except:
+            pass
+        btn_ok = self.ttk.Button(f2, text='OK', command=ok_cmd)
+        btn_ok.bind('<Return>', ok_cmd)
+        btn_cancel = self.ttk.Button(f2, text=_('Cancel'), command=cancel_cmd)
+        btn_cancel.bind('<Return>', cancel_cmd)
+        row_box.grid(row=1, column=2, sticky='w', padx=5)
+        col_box.grid(row=2, column=2, sticky='w', padx=5)
+        btn_ok.pack(side='left', padx=10, pady=10)
+        btn_cancel.pack(side='right', padx=10)
+        btn_cancel.focus_set()
+        window.bind('<Left>', lambda event: btn_ok.focus_set())
+        window.bind('<Right>', lambda event: btn_cancel.focus_set())
+        window.bind('<Escape>', cancel_cmd)
+        x = (window.winfo_screenwidth() - window.winfo_reqwidth()) / 2
+        y = (window.winfo_screenheight() - window.winfo_reqheight()) / 2
+        window.geometry("+%d+%d" % (x-150, y))
+        window.focus()
+        window.grab_set()
+        window.wait_window()
+            
     def execute_code(self):
         """Running the script from the coder"""
         self.execute = True
