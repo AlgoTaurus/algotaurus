@@ -443,7 +443,7 @@ class AlgoTaurusGui:
         self.code = code
         self.maze_rows = maze_rows
         self.maze_columns = maze_columns
-        self.size = min(450 / maze_columns, 550 / maze_rows, 25)
+        self.size = min(450 / maze_rows, 550 / maze_columns, 25)
         self.run_timer = 5.0
         self.rt_prev = 0
         self.mode = None
@@ -486,12 +486,8 @@ GOTO x\t      Continue with line x''')
 
         # Create menu for the GUI
         languages={_('Hungarian'):'hu', _('English'):'en'}
-        self.lang_value = tk.StringVar()
-        self.rows_value = tk.StringVar()
-        self.cols_value = tk.StringVar()        
+        self.lang_value = tk.StringVar()        
         self.lang_value.set(language)
-        self.rows_value.set(self.maze_rows)
-        self.cols_value.set(self.maze_columns)        
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
         self.root.config(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=False)
@@ -565,8 +561,8 @@ GOTO x\t      Continue with line x''')
         self.textPad.bind('<Button-3>', self.rclick)
         self.textPad.bind('<Key>', self.validate_input)        
         # Creating canvas and drawing the labyrinth
-        self.canvas = tk.Canvas(self.mainframe, width=self.size*(self.maze_rows + 4), height=self.size * (self.maze_columns + 4))
-        self.labyr = Labyrinth(self.maze_rows, self.maze_columns)
+        self.canvas = tk.Canvas(self.mainframe, width=self.size*(self.maze_columns + 4), height=self.size * (self.maze_rows + 4))        
+        self.labyr = Labyrinth(self.maze_columns, self.maze_rows)
         self.robot = Robot(self.labyr)
         self.robot_face = self.labyr.labyr.max()
         self.robot_pos = np.where(self.labyr.labyr == self.robot_face)        
@@ -601,7 +597,7 @@ GOTO x\t      Continue with line x''')
         self.root.update()
         w, h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
         winw, winh = self.root.winfo_width(), self.root.winfo_height()
-        self.padding = (winw - self.maze_rows * (self.size - 1), winh - self.maze_columns * (self.size - 1))
+        self.padding = (winw - self.maze_columns * (self.size - 1), winh - self.maze_rows * (self.size - 1))
         size = tuple(int(numb)+30 for numb in self.root.geometry().split('+')[0].split('x'))
         x = w/2 - size[0]/2
         y = h/2 - size[1]/2
@@ -767,7 +763,7 @@ GOTO x\t      Continue with line x''')
         self.draw_labyr(self.labyr.labyr)
 
     def new_labyr(self, event=None):
-        self.labyr = Labyrinth(self.maze_rows, self.maze_columns)
+        self.labyr = Labyrinth(self.maze_columns, self.maze_rows)
         self.robot = Robot(self.labyr)
         self.robot_face = self.labyr.labyr.max()
         self.robot_pos = np.where(self.labyr.labyr == self.robot_face)
@@ -857,7 +853,7 @@ GOTO x\t      Continue with line x''')
             
         # Resizing labyrinth to fit to the current window size
         w, h = self.root.winfo_width(), self.root.winfo_height()
-        self.canvas.configure(width=self.size*(self.maze_rows + 4), height=self.size * (self.maze_columns + 4))
+        self.canvas.configure(width=self.size*(self.maze_columns + 4), height=self.size * (self.maze_rows + 4))
         script = Script(edited_text, self.robot, max_line=lines)
         self.draw_labyr(self.labyr.labyr)
         self.canvas.update()
