@@ -18,7 +18,6 @@ import os
 import appdirs
 import ConfigParser
 import gettext
-import locale
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
@@ -238,8 +237,6 @@ class AlgoTaurusTui:
         self.stdscr = curses.initscr()
         curses.noecho()
         curses.curs_set(0)
-        locale.setlocale(locale.LC_ALL,'')
-        self.code_page = locale.getpreferredencoding()
         
         # Size of the terminal
         self.maxy, self.maxx = self.stdscr.getmaxyx()
@@ -392,7 +389,7 @@ GOTO x     continue with line x'''
             self.result_win.erase()
             self.result_border_win.border()
             self.result_border_win.refresh()
-            self.result_win.addstr(0, 0, result.encode(self.code_page), curses.A_BLINK)
+            self.result_win.addstr(0, 0, result)
             self.result_win.refresh()
             while self.command_win.getch() == -1:
                 pass
@@ -471,9 +468,6 @@ QUIT\t      Leave the labyrinth
 GOTO x\t      Continue with line x''')
 
         # Create menu for the GUI
-        languages = {_('Hungarian'): 'hu', _('English'): 'en'}
-        self.lang_value = tk.StringVar()
-        self.lang_value.set(language)        
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
         self.root.config(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=False)
@@ -490,13 +484,6 @@ GOTO x\t      Continue with line x''')
         self.editmenu.add_command(label=_('Paste'), command=self.paste_command, accelerator='Ctrl+V')
         self.editmenu.add_separator()
         self.editmenu.add_command(label=_('Select All'), command=self.sel_all, accelerator='Ctrl+A')
-        self.prefsmenu = tk.Menu(self.menu, tearoff=False)
-        self.menu.add_cascade(label=_('Preferences'), menu=self.prefsmenu)
-        self.languagemenu = tk.Menu(self.prefsmenu, tearoff=False)
-        self.prefsmenu.add_cascade(label=_('Language'), menu=self.languagemenu)
-        for lang in sorted(languages.keys()):
-            self.languagemenu.add_radiobutton(label=lang, variable=self.lang_value, value=languages[lang],
-                                            command=self.change_language)        
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('Help'), menu=self.helpmenu)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
@@ -722,15 +709,7 @@ GOTO x\t      Continue with line x''')
         elif self.run_timer < 500:
             self.run_timer *= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
-            
-    # Change language
-    def change_language(self, event=None):
-        if language != self.lang_value.get():
-            cfgfile = open(dirs.user_config_dir + '/algotaurus.ini', 'w')
-            config.set('settings', 'language', self.lang_value.get())
-            config.write(cfgfile)
-            self.tkMessageBox.showinfo(title=_('Info'), message=_('Changes will be applied on the next startup'))
-            
+                                                                                                
     def execute_code(self):
         """Running the script from the coder"""
         self.execute = True
