@@ -34,6 +34,8 @@ language = config.get('settings', 'language')
 t = gettext.translation('algotaurus', os.path.dirname(os.path.abspath(__file__))+'/locale/', [language], fallback=True)
 _ = t.ugettext
 # Only the GUI is localized now, not the TUI
+[_('left'), _('right'), _('step'), _('wall?'), _('exit?'), _('quit'), _('goto')]  # for the generate_pot script
+local_commands = [_(command) for command in ['left', 'right', 'step', 'wall?', 'exit?', 'quit', 'goto']]
 
 class Labyrinth:
     def __init__(self, x=11, y=11):
@@ -174,22 +176,22 @@ class Script:
         params = self.code[self.current_line].split(' ')[1:]
 
         # Check if command is correct
-        if not (command in ['step', 'right', 'left', 'wall?', 'exit?', 'quit', 'goto']):
+        if not (command in local_commands):
             return _('Syntax error. Unknown command.')
         
         # Run the command
-        if command == 'step':
+        if command == _('step'):
             self.current_line += 1
             return self.robot.step()
-        elif command == 'right':
+        elif command == _('right'):
             self.current_line += 1
             self.robot.right()
             return 'go on'
-        elif command == 'left':
+        elif command == _('left'):
             self.current_line += 1
             self.robot.left()
             return 'go on'
-        elif command == 'wall?':
+        elif command == _('wall?'):
             if len(params) < 2:
                 return _('Syntax error. Wall test needs two parameters.')
             try:
@@ -199,7 +201,7 @@ class Script:
                 return _('Syntax error. Wall test needs two numbers.')
             self.current_line = yes_line if self.robot.wall() else no_line
             return 'go on'
-        elif command == 'exit?':
+        elif command == _('exit?'):
             if len(params) < 2:
                 return _('Syntax error. Exit test needs two parameters.')
             try:
@@ -209,9 +211,9 @@ class Script:
                 return _('Syntax error. Exit test needs two numbers.')
             self.current_line = yes_line if self.robot.robot_exit() else no_line
             return 'go on'
-        elif command == 'quit':
+        elif command == _('quit'):
             return self.robot.robot_quit()
-        elif command == 'goto':
+        elif command == _('goto'):
             if len(params) == 0:
                 return _('Syntax error. Goto command needs a parameter.')
             try:
@@ -448,24 +450,24 @@ class AlgoTaurusGui:
 
 Available commands:
 
-LEFT\t      Turn left
+LEFT\t Turn left
 
-RIGHT\t      Turn right
+RIGHT\t Turn right
 
-STEP\t      Step one square
-\t      Ahead of wall and exit it crashes.
+STEP\t Step one square
+\t Ahead of wall and exit it crashes.
            
-WALL? x y      Is there a wall ahead?
-\t      If yes, continue with line x,
-\t      otherwise with line y.
+WALL? x y\t Is there a wall ahead?
+\t If yes, continue with line x,
+\t otherwise with line y.
            
-EXIT? x y\t      Is there an exit ahead?
+EXIT? x y\t Is there an exit ahead?
 
-QUIT\t      Leave the labyrinth
-\t      Ahead of empty field
-\t      and wall it crashes.
+QUIT\t Leave the labyrinth
+\t Ahead of empty field
+\t and wall it crashes.
            
-GOTO x\t      Continue with line x''')
+GOTO x\t Continue with line x''')
 
         # Create menu for the GUI
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
