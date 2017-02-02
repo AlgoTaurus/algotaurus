@@ -19,6 +19,7 @@ import appdirs
 import ConfigParser
 import gettext
 import locale
+import re
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
@@ -717,18 +718,18 @@ GOTO x\t Continue with line x''')
             self.execute_code()
             
     def speed_up(self, event=None):
-        if self.mode == 'step':
+        if self.mode == 'step' and self.rt_prev > 2:
              self.rt_prev /= 2
              self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
-        elif self.run_timer > 2:
+        elif self.mode != 'step' and self.run_timer > 2:
             self.run_timer /= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
 
     def speed_down(self, event=None):
-        if self.mode == 'step':
+        if self.mode == 'step' and self.rt_prev < 500:
             self.rt_prev *= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
-        elif self.run_timer < 500:
+        elif self.mode != 'step' and self.run_timer < 500:
             self.run_timer *= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
                                                                                                 
@@ -747,7 +748,7 @@ GOTO x\t Continue with line x''')
             result = 'go on'
         self.canvas.delete('all')
         lines = edited_text.count('\n')+1
-        for i in edited_text:
+        for i in re.split(' |\n', edited_text):
             try:
                 int(i)
                 if int(i) > lines:
