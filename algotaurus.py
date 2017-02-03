@@ -18,6 +18,8 @@ import os
 import appdirs
 import ConfigParser
 import gettext
+import locale
+import re
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
@@ -239,6 +241,8 @@ class AlgoTaurusTui:
         self.stdscr = curses.initscr()
         curses.noecho()
         curses.curs_set(0)
+        locale.setlocale(locale.LC_ALL,'')
+        self.code_page = locale.getpreferredencoding()
         
         # Size of the terminal
         self.maxy, self.maxx = self.stdscr.getmaxyx()
@@ -391,7 +395,7 @@ GOTO x     continue with line x'''
             self.result_win.erase()
             self.result_border_win.border()
             self.result_border_win.refresh()
-            self.result_win.addstr(0, 0, result)
+            self.result_win.addstr(0, 0, result.encode(self.code_page), curses.A_BLINK)
             self.result_win.refresh()
             while self.command_win.getch() == -1:
                 pass
@@ -433,7 +437,7 @@ class AlgoTaurusGui:
         self.rt_prev = 0
         self.mode = None
         self.execute = False
-        self.exit_flag=False
+        self.exit_flag = False
         self.root = tk.Tk()
         self.root.title('AlgoTaurus')
 
@@ -470,6 +474,9 @@ QUIT\t Leave the labyrinth
 GOTO x\t Continue with line x''')
 
         # Create menu for the GUI
+        languages = {_('Hungarian'): 'hu', _('English'): 'en'}
+        self.lang_value = tk.StringVar()
+        self.lang_value.set(language)
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
         self.root.config(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=False)
@@ -486,6 +493,13 @@ GOTO x\t Continue with line x''')
         self.editmenu.add_command(label=_('Paste'), command=self.paste_command, accelerator='Ctrl+V')
         self.editmenu.add_separator()
         self.editmenu.add_command(label=_('Select All'), command=self.sel_all, accelerator='Ctrl+A')
+        self.prefsmenu = tk.Menu(self.menu, tearoff=False)
+        self.menu.add_cascade(label=_('Preferences'), menu=self.prefsmenu)
+        self.languagemenu = tk.Menu(self.prefsmenu, tearoff=False)
+        self.prefsmenu.add_cascade(label=_('Language'), menu=self.languagemenu)
+        for lang in sorted(languages.keys()):
+            self.languagemenu.add_radiobutton(label=lang, variable=self.lang_value, value=languages[lang],
+                                            command=self.change_language)
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('Help'), menu=self.helpmenu)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
@@ -506,7 +520,6 @@ GOTO x\t Continue with line x''')
         # Hotkeys
         self.root.bind('<F5>', self.runmode)
         self.root.bind('<F6>', self.stepmode)
-        self.root.bind('<F7>', self.stopcommand)
         self.root.bind('<F2>', self.speed_down)
         self.root.bind('<F3>', self.speed_up)
         
@@ -573,9 +586,18 @@ GOTO x\t Continue with line x''')
         y = h/2 - size[1]/2
         self.root.geometry("%dx%d+%d+%d" % (size + (x, y)))
         self.root.minsize(winw, winh)
+        self.root.focus_force()
+        self.textPad.focus_set()        
         self.root.mainloop()
 
     # Building menu and coder options
+    def change_language(self, event=None):
+        if language != self.lang_value.get():
+            cfgfile = open(dirs.user_config_dir + '/algotaurus.ini', 'w')
+            config.set('settings', 'language', self.lang_value.get())
+            config.write(cfgfile)
+            self.tkMessageBox.showinfo(title=_('Info'), message=_('Changes will be applied on the next startup'))
+
     def validate_input(self, event):
         lines = self.textPad.index('end').split('.')[0]
         if lines > self.lines+2:
@@ -587,7 +609,7 @@ GOTO x\t Continue with line x''')
 
     def open_command(self, event=None):
         at_file = self.tkFileDialog.askopenfile(parent=self.root, mode='rb', title=_('Select a file'),
-                                                filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), ('all files', '.*')])
+                                                filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), (_('all files'), '.*')])
         if at_file != None:
             contents = at_file.read()
             self.textPad.delete('1.0', 'end')
@@ -596,7 +618,7 @@ GOTO x\t Continue with line x''')
 
     def save_command(self, event=None):
         at_file = self.tkFileDialog.asksaveasfile(mode='w', defaultextension='.lab',
-                                                  filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), ('all files', '.*')],
+                                                  filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), (_('all files'), '.*')],
                                                   initialfile='lab01.lab')
         if at_file != None:
         # slice off the last character from get, as an extra return is added
@@ -610,7 +632,7 @@ GOTO x\t Continue with line x''')
             self.root.destroy()
 
     def about_command(self, event=None):
-        self.tkMessageBox.showinfo('About', _(u'AlgoTaurus 1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'))
+        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus 1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'))
 
     def sel_all(self, event=None):
         self.textPad.tag_add('sel', '1.0', 'end')
@@ -673,9 +695,19 @@ GOTO x\t Continue with line x''')
     
     # Button commands
     def stopcommand(self, event=None):
-        self.stop = 1
+        self.stop, self.step = 1, 0
         if self.rt_prev:
             self.run_timer = self.rt_prev
+        self.linebox.configure(state='normal')
+        self.linebox.delete(self.current_pos)
+        self.linebox.configure(state='disabled')
+        self.buttstop.configure(state='disabled')
+        self.buttstep.configure(state='normal')
+        self.buttrun.configure(state='normal')
+        self.root.bind('<F5>', self.runmode)
+        self.textPad.configure(state='normal', bg='white')
+        self.root.unbind('<F7>')
+        self.execute = False
             
     def stepmode(self, event=None):
         self.mode = 'step'
@@ -684,8 +716,8 @@ GOTO x\t Continue with line x''')
             self.run_timer = 0
         self.step = 1
         self.buttrun.configure(state='normal')
-        if self.execute == False:
-            self.execute_code()
+        self.root.bind('<F5>', self.runmode)
+        self.execute_code()
 
     def runmode(self, event=None):
         self.mode = 'run'
@@ -693,90 +725,79 @@ GOTO x\t Continue with line x''')
             self.run_timer = self.rt_prev
         self.step = 1
         self.buttrun.configure(state='disabled')
-        if self.execute == False:
-            self.execute_code()
+        self.root.unbind('<F5>')
+        self.execute_code()
             
     def speed_up(self, event=None):
-        if self.mode == 'step':
+        if self.mode == 'step' and self.rt_prev > 2:
              self.rt_prev /= 2
              self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
-        elif self.run_timer > 2:
+        elif self.mode != 'step' and self.run_timer > 2:
             self.run_timer /= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
 
     def speed_down(self, event=None):
-        if self.mode == 'step':
+        if self.mode == 'step' and self.rt_prev < 500:
             self.rt_prev *= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
-        elif self.run_timer < 500:
+        elif self.mode != 'step' and self.run_timer < 500:
             self.run_timer *= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
                                                                                                 
     def execute_code(self):
         """Running the script from the coder"""
-        self.execute = True
-        self.stop = 0
-        self.buttstop.configure(state='normal')
-        self.textPad.configure(state='disabled', bg='white smoke')
-        self.textPad.see('1.0')
-        edited_text = self.textPad.get('1.0', 'end'+'-1c')
-        edited_text = edited_text.rstrip()
-        if edited_text == '':
-            result = _('There is no command to execute!')
-        else:
-            result = 'go on'
-        self.canvas.delete('all')
-        lines = edited_text.count('\n')+1
-        for i in edited_text:
-            try:
-                int(i)
-                if int(i) > lines:
-                    result = _('Wrong code: some reference is larger than number of lines!')
-            except:
-                pass
-            
-        # Resizing labyrinth to fit to the current window size
-        self.root.update()
-        w, h = self.root.winfo_width(), self.root.winfo_height()
-        self.x, self.y = (w-self.padding[0])/self.size, (h-self.padding[1])/self.size
-        self.canvas.configure(width=self.size*(self.x+4), height=self.size*(self.y+4))
-        self.root.update()
-        # Drawing the labyrinth
-        lab = Labyrinth(self.x, self.y)
-        labyr = lab.labyr
-        robot = Robot(lab)
-        script = Script(edited_text, robot, max_line=lines)
-        self.draw_labyr(labyr)
-        self.canvas.update()
-        self.canvas.after(1000)
-        current_pos = 'end'
-        self.step = 1
-        while result == 'go on' and not self.exit_flag:
-            if self.step == 1:
-                self.linebox.config(state='normal')
-                self.linebox.delete(current_pos)
-                current_pos = str(script.current_line)+'.2'
-                self.linebox.insert(current_pos, '>')
-                self.linebox.config(state='disabled')
-                result = script.execute_command()
-                self.move_robot(labyr)
-                if self.mode == 'step':
-                    self.step = 0
-            else:
-                self.canvas.update()
-            if self.stop == 1:
-                break
-        if not self.exit_flag:
-            self.linebox.configure(state='normal')
-            self.linebox.delete(current_pos)
-            self.linebox.configure(state='disabled')
-            if not self.stop:
-                self.tkMessageBox.showinfo('Result', result)
-            self.buttstop.configure(state='disabled')
-            self.buttstep.configure(state='normal')
-            self.buttrun.configure(state='normal')
-            self.textPad.configure(state='normal', bg='white')
-            self.execute = False
+        if not self.execute:
+            self.execute = True
+            self.stop = 0
+            self.buttstop.configure(state='normal')
+            self.root.bind('<F7>', self.stopcommand)
+            self.textPad.configure(state='disabled', bg='white smoke')
+            self.textPad.see('1.0')
+            edited_text = self.textPad.get('1.0', 'end'+'-1c')
+            edited_text = edited_text.rstrip()
+            if edited_text == '':
+                self.result = _('There is no command to execute!')
+            else: #
+                self.result = 'go on'
+            self.canvas.delete('all')
+            lines = edited_text.count('\n')+1
+            for i in re.split(' |\n', edited_text):
+                try:
+                    int(i)
+                    if int(i) > lines:
+                        self.result = _('Wrong code: some reference is larger than number of lines!')
+                except:
+                    pass
+
+            # Resizing labyrinth to fit to the current window size
+            self.root.update()
+            w, h = self.root.winfo_width(), self.root.winfo_height()
+            self.x, self.y = (w-self.padding[0])/self.size, (h-self.padding[1])/self.size
+            self.canvas.configure(width=self.size*(self.x+4), height=self.size*(self.y+4))
+            self.root.update()
+            # Drawing the labyrinth
+            lab = Labyrinth(self.x, self.y)
+            self.labyr = lab.labyr
+            self.robot = Robot(lab)
+            self.script = Script(edited_text, self.robot, max_line=lines)
+            self.draw_labyr(self.labyr)
+            self.canvas.update()
+            self.canvas.after(1000)
+            self.current_pos = 'end'
+        while self.result == 'go on' and not self.exit_flag and self.step == 1:
+            if self.mode == 'step':
+                self.step = 0
+            self.canvas.update()
+            self.linebox.config(state='normal')
+            self.linebox.delete(self.current_pos)
+            self.current_pos = str(self.script.current_line)+'.2'
+            self.linebox.insert(self.current_pos, '>')
+            self.linebox.config(state='disabled')
+            self.result = self.script.execute_command()
+            self.move_robot(self.labyr)
+        if not self.exit_flag and self.result != 'go on':
+            self.stopcommand()
+            self.tkMessageBox.showinfo('Result', self.result)
 
 
 if __name__ == '__main__':
