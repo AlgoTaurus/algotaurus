@@ -18,6 +18,8 @@ import os
 import appdirs
 import ConfigParser
 import gettext
+import locale
+import re
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
@@ -239,6 +241,8 @@ class AlgoTaurusTui:
         self.stdscr = curses.initscr()
         curses.noecho()
         curses.curs_set(0)
+        locale.setlocale(locale.LC_ALL,'')
+        self.code_page = locale.getpreferredencoding()
         
         # Size of the terminal
         self.maxy, self.maxx = self.stdscr.getmaxyx()
@@ -391,7 +395,7 @@ GOTO x     continue with line x'''
             self.result_win.erase()
             self.result_border_win.border()
             self.result_border_win.refresh()
-            self.result_win.addstr(0, 0, result)
+            self.result_win.addstr(0, 0, result.encode(self.code_page), curses.A_BLINK)
             self.result_win.refresh()
             while self.command_win.getch() == -1:
                 pass
@@ -433,7 +437,7 @@ class AlgoTaurusGui:
         self.rt_prev = 0
         self.mode = None
         self.execute = False
-        self.exit_flag=False
+        self.exit_flag = False
         self.root = tk.Tk()
         self.root.title('AlgoTaurus')
 
@@ -470,6 +474,9 @@ QUIT\t Leave the labyrinth
 GOTO x\t Continue with line x''')
 
         # Create menu for the GUI
+        languages = {_('Hungarian'): 'hu', _('English'): 'en'}
+        self.lang_value = tk.StringVar()
+        self.lang_value.set(language)
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
         self.root.config(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=False)
@@ -486,6 +493,13 @@ GOTO x\t Continue with line x''')
         self.editmenu.add_command(label=_('Paste'), command=self.paste_command, accelerator='Ctrl+V')
         self.editmenu.add_separator()
         self.editmenu.add_command(label=_('Select All'), command=self.sel_all, accelerator='Ctrl+A')
+        self.prefsmenu = tk.Menu(self.menu, tearoff=False)
+        self.menu.add_cascade(label=_('Preferences'), menu=self.prefsmenu)
+        self.languagemenu = tk.Menu(self.prefsmenu, tearoff=False)
+        self.prefsmenu.add_cascade(label=_('Language'), menu=self.languagemenu)
+        for lang in sorted(languages.keys()):
+            self.languagemenu.add_radiobutton(label=lang, variable=self.lang_value, value=languages[lang],
+                                            command=self.change_language)
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('Help'), menu=self.helpmenu)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
@@ -573,9 +587,18 @@ GOTO x\t Continue with line x''')
         y = h/2 - size[1]/2
         self.root.geometry("%dx%d+%d+%d" % (size + (x, y)))
         self.root.minsize(winw, winh)
+        self.root.focus_force()
+        self.textPad.focus_set()        
         self.root.mainloop()
 
     # Building menu and coder options
+    def change_language(self, event=None):
+        if language != self.lang_value.get():
+            cfgfile = open(dirs.user_config_dir + '/algotaurus.ini', 'w')
+            config.set('settings', 'language', self.lang_value.get())
+            config.write(cfgfile)
+            self.tkMessageBox.showinfo(title=_('Info'), message=_('Changes will be applied on the next startup'))
+
     def validate_input(self, event):
         lines = self.textPad.index('end').split('.')[0]
         if lines > self.lines+2:
@@ -587,7 +610,7 @@ GOTO x\t Continue with line x''')
 
     def open_command(self, event=None):
         at_file = self.tkFileDialog.askopenfile(parent=self.root, mode='rb', title=_('Select a file'),
-                                                filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), ('all files', '.*')])
+                                                filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), (_('all files'), '.*')])
         if at_file != None:
             contents = at_file.read()
             self.textPad.delete('1.0', 'end')
@@ -596,7 +619,7 @@ GOTO x\t Continue with line x''')
 
     def save_command(self, event=None):
         at_file = self.tkFileDialog.asksaveasfile(mode='w', defaultextension='.lab',
-                                                  filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), ('all files', '.*')],
+                                                  filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), (_('all files'), '.*')],
                                                   initialfile='lab01.lab')
         if at_file != None:
         # slice off the last character from get, as an extra return is added
@@ -610,7 +633,7 @@ GOTO x\t Continue with line x''')
             self.root.destroy()
 
     def about_command(self, event=None):
-        self.tkMessageBox.showinfo('About', _(u'AlgoTaurus 1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'))
+        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus 1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'))
 
     def sel_all(self, event=None):
         self.textPad.tag_add('sel', '1.0', 'end')
@@ -697,18 +720,18 @@ GOTO x\t Continue with line x''')
             self.execute_code()
             
     def speed_up(self, event=None):
-        if self.mode == 'step':
+        if self.mode == 'step' and self.rt_prev > 2:
              self.rt_prev /= 2
              self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
-        elif self.run_timer > 2:
+        elif self.mode != 'step' and self.run_timer > 2:
             self.run_timer /= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
 
     def speed_down(self, event=None):
-        if self.mode == 'step':
+        if self.mode == 'step' and self.rt_prev < 500:
             self.rt_prev *= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
-        elif self.run_timer < 500:
+        elif self.mode != 'step' and self.run_timer < 500:
             self.run_timer *= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
                                                                                                 
@@ -727,7 +750,7 @@ GOTO x\t Continue with line x''')
             result = 'go on'
         self.canvas.delete('all')
         lines = edited_text.count('\n')+1
-        for i in edited_text:
+        for i in re.split(' |\n', edited_text):
             try:
                 int(i)
                 if int(i) > lines:
