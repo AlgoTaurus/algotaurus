@@ -20,7 +20,6 @@ import ConfigParser
 import gettext
 import locale
 import re
-import pdb
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
