@@ -602,7 +602,7 @@ GOTO x\t Continue with line x''')
 
     def open_command(self, event=None):
         at_file = self.tkFileDialog.askopenfile(parent=self.root, mode='rb', title=_('Select a file'),
-                                                filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), ('all files', '.*')])
+                                                filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), (_('all files'), '.*')])
         if at_file != None:
             contents = at_file.read()
             self.textPad.delete('1.0', 'end')
@@ -611,7 +611,7 @@ GOTO x\t Continue with line x''')
 
     def save_command(self, event=None):
         at_file = self.tkFileDialog.asksaveasfile(mode='w', defaultextension='.lab',
-                                                  filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), ('all files', '.*')],
+                                                  filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), (_('all files'), '.*')],
                                                   initialfile='lab01.lab')
         if at_file != None:
         # slice off the last character from get, as an extra return is added
@@ -625,7 +625,7 @@ GOTO x\t Continue with line x''')
             self.root.destroy()
 
     def about_command(self, event=None):
-        self.tkMessageBox.showinfo('About', _(u'AlgoTaurus 1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'))
+        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus 1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'))
 
     def sel_all(self, event=None):
         self.textPad.tag_add('sel', '1.0', 'end')
