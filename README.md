@@ -43,6 +43,15 @@ Some tasks to solve and discuss:
 
 If you want to use AlgoTaurus in other languages, you can help translating it on [POEditor](https://poeditor.com/projects/view?id=91267). 
 
+## Changelog
+
+Version 1.1
+- User interface and commands are localizable
+- Hungarian version 
+
+Version 1.0
+- Initial release
+
 ## Copyright
 
 The game is a remake and an extension of the game Labirint by Lukyanov Konstantin and Volkov Sergey.
