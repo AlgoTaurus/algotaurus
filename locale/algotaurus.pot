@@ -1,0 +1,248 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-02-06 15:48+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .././algotaurus.py:37 .././algotaurus.py:190
+msgid "left"
+msgstr ""
+
+#: .././algotaurus.py:37 .././algotaurus.py:186
+msgid "right"
+msgstr ""
+
+#: .././algotaurus.py:37 .././algotaurus.py:183
+msgid "step"
+msgstr ""
+
+#: .././algotaurus.py:37 .././algotaurus.py:194
+msgid "wall?"
+msgstr ""
+
+#: .././algotaurus.py:37 .././algotaurus.py:204
+msgid "exit?"
+msgstr ""
+
+#: .././algotaurus.py:37 .././algotaurus.py:214
+msgid "quit"
+msgstr ""
+
+#: .././algotaurus.py:37 .././algotaurus.py:216
+msgid "goto"
+msgstr ""
+
+#: .././algotaurus.py:114
+msgid "Game over. AlgoTaurus run into wall."
+msgstr ""
+
+#: .././algotaurus.py:116
+msgid "Game over. AlgoTaurus stepped into exit."
+msgstr ""
+
+#: .././algotaurus.py:136
+msgid "Congratulations! AlgoTaurus successfully reached the exit."
+msgstr ""
+
+#: .././algotaurus.py:138
+msgid "Game over. AlgoTaurus was not in the exit yet."
+msgstr ""
+
+#: .././algotaurus.py:168
+msgid "Game over. Code ended."
+msgstr ""
+
+#: .././algotaurus.py:180
+msgid "Syntax error. Unknown command."
+msgstr ""
+
+#: .././algotaurus.py:196
+msgid "Syntax error. Wall test needs two parameters."
+msgstr ""
+
+#: .././algotaurus.py:201
+msgid "Syntax error. Wall test needs two numbers."
+msgstr ""
+
+#: .././algotaurus.py:206
+msgid "Syntax error. Exit test needs two parameters."
+msgstr ""
+
+#: .././algotaurus.py:211
+msgid "Syntax error. Exit test needs two numbers."
+msgstr ""
+
+#: .././algotaurus.py:218
+msgid "Syntax error. Goto command needs a parameter."
+msgstr ""
+
+#: .././algotaurus.py:222
+msgid "Syntax error. Goto command needs a number."
+msgstr ""
+
+#: .././algotaurus.py:449
+msgid ""
+"Help AlgoTaurus to find the exit.\n"
+"\n"
+"Available commands:\n"
+"\n"
+"LEFT\t Turn left\n"
+"\n"
+"RIGHT\t Turn right\n"
+"\n"
+"STEP\t Step one square\n"
+"\t Ahead of wall and exit it crashes.\n"
+"           \n"
+"WALL? x y\t Is there a wall ahead?\n"
+"\t If yes, continue with line x,\n"
+"\t otherwise with line y.\n"
+"           \n"
+"EXIT? x y\t Is there an exit ahead?\n"
+"\n"
+"QUIT\t Leave the labyrinth\n"
+"\t Ahead of empty field\n"
+"\t and wall it crashes.\n"
+"           \n"
+"GOTO x\t Continue with line x"
+msgstr ""
+
+#: .././algotaurus.py:479
+msgid "File"
+msgstr ""
+
+#: .././algotaurus.py:480
+msgid "New"
+msgstr ""
+
+#: .././algotaurus.py:481
+msgid "Open..."
+msgstr ""
+
+#: .././algotaurus.py:482
+msgid "Save"
+msgstr ""
+
+#: .././algotaurus.py:484
+msgid "Exit"
+msgstr ""
+
+#: .././algotaurus.py:486
+msgid "Edit"
+msgstr ""
+
+#: .././algotaurus.py:487 .././algotaurus.py:501
+msgid "Copy"
+msgstr ""
+
+#: .././algotaurus.py:488 .././algotaurus.py:502
+msgid "Cut"
+msgstr ""
+
+#: .././algotaurus.py:489 .././algotaurus.py:503
+msgid "Paste"
+msgstr ""
+
+#: .././algotaurus.py:491
+msgid "Select All"
+msgstr ""
+
+#: .././algotaurus.py:493
+msgid "AlgoTaurus"
+msgstr ""
+
+#: .././algotaurus.py:495
+msgid "Language"
+msgstr ""
+
+#: .././algotaurus.py:499
+msgid "About..."
+msgstr ""
+
+#: .././algotaurus.py:531 .././algotaurus.py:716 .././algotaurus.py:719
+#: .././algotaurus.py:724 .././algotaurus.py:727
+#, python-format
+msgid "Run timer: %s msec"
+msgstr ""
+
+#: .././algotaurus.py:538
+msgid "Coder"
+msgstr ""
+
+#: .././algotaurus.py:550
+msgid "Stop (F7)"
+msgstr ""
+
+#: .././algotaurus.py:551
+msgid "Step (F6)"
+msgstr ""
+
+#: .././algotaurus.py:552
+msgid "Run (F5)"
+msgstr ""
+
+#: .././algotaurus.py:553
+msgid "Speed down (F2)"
+msgstr ""
+
+#: .././algotaurus.py:554
+msgid "Speed up (F3)"
+msgstr ""
+
+#: .././algotaurus.py:592
+msgid "Info"
+msgstr ""
+
+#: .././algotaurus.py:592
+msgid "Changes will be applied on the next startup"
+msgstr ""
+
+#: .././algotaurus.py:604
+msgid "Select a file"
+msgstr ""
+
+#: .././algotaurus.py:605 .././algotaurus.py:614
+msgid "AlgoTaurus syntaxes"
+msgstr ""
+
+#: .././algotaurus.py:605 .././algotaurus.py:614
+msgid "all files"
+msgstr ""
+
+#: .././algotaurus.py:623
+msgid "Quit"
+msgstr ""
+
+#: .././algotaurus.py:623
+msgid "Do you really want to quit?"
+msgstr ""
+
+#: .././algotaurus.py:628
+msgid "About"
+msgstr ""
+
+#: .././algotaurus.py:628
+msgid ""
+"AlgoTaurus 1.1\n"
+"Copyright © 2015-2017 Attila Krajcsi and Ádám Markója"
+msgstr ""
+
+#: .././algotaurus.py:739
+msgid "There is no command to execute!"
+msgstr ""
+
+#: .././algotaurus.py:748
+msgid "Wrong code: some reference is larger than number of lines!"
+msgstr ""
