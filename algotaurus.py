@@ -470,6 +470,9 @@ QUIT\t Leave the labyrinth
 GOTO x\t Continue with line x''')
 
         # Create menu for the GUI
+        languages = {'Hungarian': 'hu', 'English': 'en'}
+        self.lang_value = tk.StringVar()
+        self.lang_value.set(language)
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
         self.root.config(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=False)
@@ -487,7 +490,12 @@ GOTO x\t Continue with line x''')
         self.editmenu.add_separator()
         self.editmenu.add_command(label=_('Select All'), command=self.sel_all, accelerator='Ctrl+A')
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
-        self.menu.add_cascade(label=_('Help'), menu=self.helpmenu)
+        self.menu.add_cascade(label=_('AlgoTaurus'), menu=self.helpmenu)
+        self.languagemenu = tk.Menu(self.helpmenu, tearoff=False)
+        self.helpmenu.add_cascade(label=_('Language'), menu=self.languagemenu)
+        for lang in sorted(languages.keys()):
+            self.languagemenu.add_radiobutton(label=lang, variable=self.lang_value, value=languages[lang],
+                                              command = self.change_language)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
         self.rclickmenu = tk.Menu(self.menu, tearoff=False)
         self.rclickmenu.add_command(label=_('Copy'), command=self.copy_command)
@@ -576,6 +584,13 @@ GOTO x\t Continue with line x''')
         self.root.mainloop()
 
     # Building menu and coder options
+    def change_language(self, event=None):
+        if language != self.lang_value.get():
+            cfgfile = open(dirs.user_config_dir + '/algotaurus.ini', 'w')
+            config.set('settings', 'language', self.lang_value.get())
+            config.write(cfgfile)
+            self.tkMessageBox.showinfo(title=_('Info'), message=_('Changes will be applied on the next startup'))
+
     def validate_input(self, event):
         lines = self.textPad.index('end').split('.')[0]
         if lines > self.lines+2:
