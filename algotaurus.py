@@ -673,8 +673,7 @@ GOTO x\t Continue with line x''')
     
     def move_robot(self, labyr):
         """Moving the robot on the canvas"""
-        rt = int(self.run_timer)
-        self.canvas.after(rt)
+        self.canvas.after(int(self.run_timer))
         self.canvas.delete(self.labrobot)
         robot = labyr.max()
         col, row = tuple(int(i) for i in (np.where(labyr == robot)))
