@@ -470,7 +470,8 @@ QUIT\t Leave the labyrinth
 GOTO x\t Continue with line x''')
 
         # Create menu for the GUI
-        languages = {'Hungarian': 'hu', 'English': 'en'}
+        languages = {'Hungarian': 'hu', 'English': 'en'}  # do not localize this, because it could be hard for the ...
+        # user to switch back after switching accidently to an unknown language
         self.lang_value = tk.StringVar()
         self.lang_value.set(language)
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
