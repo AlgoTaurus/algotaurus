@@ -18,6 +18,7 @@ import os
 import appdirs
 import ConfigParser
 import gettext
+import re
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
@@ -742,7 +743,7 @@ GOTO x\t Continue with line x''')
             result = 'go on'
         self.canvas.delete('all')
         lines = edited_text.count('\n')+1
-        for i in edited_text:
+        for i in re.split(' |\n', edited_text):
             try:
                 int(i)
                 if int(i) > lines:
