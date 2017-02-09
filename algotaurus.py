@@ -18,6 +18,7 @@ import os
 import appdirs
 import ConfigParser
 import gettext
+import re
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
@@ -515,7 +516,6 @@ GOTO x\t Continue with line x''')
         # Hotkeys
         self.root.bind('<F5>', self.runmode)
         self.root.bind('<F6>', self.stepmode)
-        self.root.bind('<F7>', self.stopcommand)
         self.root.bind('<F2>', self.speed_down)
         self.root.bind('<F3>', self.speed_up)
         
@@ -688,9 +688,19 @@ GOTO x\t Continue with line x''')
     
     # Button commands
     def stopcommand(self, event=None):
-        self.stop = 1
+        self.stop, self.step = 1, 0
         if self.rt_prev:
             self.run_timer = self.rt_prev
+        self.linebox.configure(state='normal')
+        self.linebox.delete(self.current_pos)
+        self.linebox.configure(state='disabled')
+        self.buttstop.configure(state='disabled')
+        self.buttstep.configure(state='normal')
+        self.buttrun.configure(state='normal')
+        self.root.bind('<F5>', self.runmode)
+        self.textPad.configure(state='normal', bg='white')
+        self.root.unbind('<F7>')
+        self.execute = False
             
     def stepmode(self, event=None):
         self.mode = 'step'
@@ -699,8 +709,8 @@ GOTO x\t Continue with line x''')
             self.run_timer = 0
         self.step = 1
         self.buttrun.configure(state='normal')
-        if self.execute == False:
-            self.execute_code()
+        self.root.bind('<F5>', self.runmode)
+        self.execute_code()
 
     def runmode(self, event=None):
         self.mode = 'run'
@@ -708,8 +718,8 @@ GOTO x\t Continue with line x''')
             self.run_timer = self.rt_prev
         self.step = 1
         self.buttrun.configure(state='disabled')
-        if self.execute == False:
-            self.execute_code()
+        self.root.unbind('<F5>')
+        self.execute_code()
             
     def speed_up(self, event=None):
         if self.mode == 'step':
@@ -729,69 +739,60 @@ GOTO x\t Continue with line x''')
                                                                                                 
     def execute_code(self):
         """Running the script from the coder"""
-        self.execute = True
-        self.stop = 0
-        self.buttstop.configure(state='normal')
-        self.textPad.configure(state='disabled', bg='white smoke')
-        self.textPad.see('1.0')
-        edited_text = self.textPad.get('1.0', 'end'+'-1c')
-        edited_text = edited_text.rstrip()
-        if edited_text == '':
-            result = _('There is no command to execute!')
-        else:
-            result = 'go on'
-        self.canvas.delete('all')
-        lines = edited_text.count('\n')+1
-        for i in edited_text:
-            try:
-                int(i)
-                if int(i) > lines:
-                    result = _('Wrong code: some reference is larger than number of lines!')
-            except:
-                pass
-            
-        # Resizing labyrinth to fit to the current window size
-        self.root.update()
-        w, h = self.root.winfo_width(), self.root.winfo_height()
-        self.x, self.y = (w-self.padding[0])/self.size, (h-self.padding[1])/self.size
-        self.canvas.configure(width=self.size*(self.x+4), height=self.size*(self.y+4))
-        self.root.update()
-        # Drawing the labyrinth
-        lab = Labyrinth(self.x, self.y)
-        labyr = lab.labyr
-        robot = Robot(lab)
-        script = Script(edited_text, robot, max_line=lines)
-        self.draw_labyr(labyr)
-        self.canvas.update()
-        self.canvas.after(1000)
-        current_pos = 'end'
-        self.step = 1
-        while result == 'go on' and not self.exit_flag:
-            if self.step == 1:
-                self.linebox.config(state='normal')
-                self.linebox.delete(current_pos)
-                current_pos = str(script.current_line)+'.2'
-                self.linebox.insert(current_pos, '>')
-                self.linebox.config(state='disabled')
-                result = script.execute_command()
-                self.move_robot(labyr)
-                if self.mode == 'step':
-                    self.step = 0
-            else:
-                self.canvas.update()
-            if self.stop == 1:
-                break
-        if not self.exit_flag:
-            self.linebox.configure(state='normal')
-            self.linebox.delete(current_pos)
-            self.linebox.configure(state='disabled')
-            if not self.stop:
-                self.tkMessageBox.showinfo('Result', result)
-            self.buttstop.configure(state='disabled')
-            self.buttstep.configure(state='normal')
-            self.buttrun.configure(state='normal')
-            self.textPad.configure(state='normal', bg='white')
-            self.execute = False
+        if not self.execute:
+            self.execute = True
+            self.stop = 0
+            self.buttstop.configure(state='normal')
+            self.root.bind('<F7>', self.stopcommand)
+            self.textPad.configure(state='disabled', bg='white smoke')
+            self.textPad.see('1.0')
+            edited_text = self.textPad.get('1.0', 'end' + '-1c')
+            edited_text = edited_text.rstrip()
+            if edited_text == '':
+                self.result = _('There is no command to execute!')
+            else:  #
+                self.result = 'go on'
+            self.canvas.delete('all')
+            lines = edited_text.count('\n') + 1
+            for i in re.split(' |\n', edited_text):
+                try:
+                    int(i)
+                    if int(i) > lines:
+                        self.result = _('Wrong code: some reference is larger than number of lines!')
+                except:
+                    pass
+
+            # Resizing labyrinth to fit to the current window size
+            self.root.update()
+            w, h = self.root.winfo_width(), self.root.winfo_height()
+            self.x, self.y = (w - self.padding[0]) / self.size, (h - self.padding[1]) / self.size
+            self.canvas.configure(width=self.size * (self.x + 4), height=self.size * (self.y + 4))
+            self.root.update()
+            # Drawing the labyrinth
+            lab = Labyrinth(self.x, self.y)
+            self.labyr = lab.labyr
+            self.robot = Robot(lab)
+            self.script = Script(edited_text, self.robot, max_line=lines)
+            self.draw_labyr(self.labyr)
+            self.canvas.update()
+            self.canvas.after(1000)
+            self.current_pos = 'end'
+
+        while self.result == 'go on' and not self.exit_flag and self.step == 1:
+            if self.mode == 'step':
+                self.step = 0
+            self.canvas.update()
+            self.linebox.config(state='normal')
+            self.linebox.delete(self.current_pos)
+            self.current_pos = str(self.script.current_line) + '.2'
+            self.linebox.insert(self.current_pos, '>')
+            self.linebox.config(state='disabled')
+            self.result = self.script.execute_command()
+            self.move_robot(self.labyr)
+
+        if not self.exit_flag and self.result != 'go on':
+            self.stopcommand()
+            self.tkMessageBox.showinfo('Result', self.result)
 
 
 if __name__ == '__main__':
