@@ -38,7 +38,7 @@ _ = t.ugettext
 local_commands = [_(command) for command in ['left', 'right', 'step', 'wall?', 'exit?', 'quit', 'goto']]
 
 class Labyrinth:
-    def __init__(self, x=11, y=11):
+    def __init__(self, x=11, y=11, labyr_type=1):
         """Create labyrinth.
         x, y: size of the labyrinth
         the minimum size is 11 x 11
@@ -57,22 +57,29 @@ class Labyrinth:
         # Create exits        
         self.labyr = np.ones((y+4, x+4))*2
         self.labyr[2:-2, 2:-2] = 0
-        
-        def find_new_cell(current_cell):
-            """ Depth first search algorithm
-            http://en.wikipedia.org/wiki/Maze_generation_algorithm
-            This one is building the wall, not carving the path.
-            """
-            self.labyr[tuple(current_cell)] = 1
-            neighb_cells = [[-2, 0], [2, 0], [0, 2], [0, -2]]
-            random.shuffle(neighb_cells)
-            for pos in neighb_cells:
-                next_cell = current_cell+pos
-                if self.labyr[tuple(next_cell)] == 0:
-                    self.labyr[tuple((next_cell+current_cell)/2)] = 1
-                    find_new_cell(next_cell)
-            return
-        find_new_cell(np.array([2, 2]))
+
+        if labyr_type == 0:
+            #self.labyr[-3, -3] = 1  # TODO on GUI (not sure about TUI) these are y and x coordinates, not x and y
+            self.labyr[5:-5, 3] = 1
+            self.labyr[5:-5, -4] = 1
+            self.labyr[3, 5:-5] = 1
+            self.labyr[-4, 5:-5] = 1
+        elif labyr_type == 1:
+            def find_new_cell(current_cell):
+                """ Depth first search algorithm
+                http://en.wikipedia.org/wiki/Maze_generation_algorithm
+                This one is building the wall, not carving the path.
+                """
+                self.labyr[tuple(current_cell)] = 1
+                neighb_cells = [[-2, 0], [2, 0], [0, 2], [0, -2]]
+                random.shuffle(neighb_cells)
+                for pos in neighb_cells:
+                    next_cell = current_cell+pos
+                    if self.labyr[tuple(next_cell)] == 0:
+                        self.labyr[tuple((next_cell+current_cell)/2)] = 1
+                        find_new_cell(next_cell)
+                return
+            find_new_cell(np.array([2, 2]))
         
 
 class Robot:
@@ -474,6 +481,8 @@ GOTO x\t Continue with line x''')
         # user to switch back after switching accidently to an unknown language
         self.lang_value = tk.StringVar()
         self.lang_value.set(language)
+        self.labyr_type = tk.IntVar()
+        self.labyr_type.set(0)
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
         self.root.config(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=False)
@@ -490,6 +499,13 @@ GOTO x\t Continue with line x''')
         self.editmenu.add_command(label=_('Paste'), command=self.paste_command, accelerator='Ctrl+V')
         self.editmenu.add_separator()
         self.editmenu.add_command(label=_('Select All'), command=self.sel_all, accelerator='Ctrl+A')
+        self.labyrmenu = tk.Menu(self.menu, tearoff=False)
+        self.menu.add_cascade(label=_('Labyrinth'), menu=self.labyrmenu)
+        self.typemenu = tk.Menu(self.labyrmenu, tearoff=False)
+        self.labyrmenu.add_cascade(label=_('Type'), menu=self.typemenu)
+        for labyr_type in [0, 1]:
+            self.typemenu.add_radiobutton(label=labyr_type, variable=self.labyr_type, value=labyr_type,
+                                          command=self.change_labyr_type)
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('AlgoTaurus'), menu=self.helpmenu)
         self.languagemenu = tk.Menu(self.helpmenu, tearoff=False)
@@ -542,10 +558,9 @@ GOTO x\t Continue with line x''')
         self.textPad.bind('<Key>', self.validate_input)        
         # Creating canvas and drawing sample labyrinth
         self.canvas = tk.Canvas(self.mainframe, width=self.size*(self.x+4), height=self.size*(self.y+4))
-        samplab = Labyrinth(self.x, self.y)
-        sample = samplab.labyr
+        samplab = Labyrinth(x=self.x, y=self.y, labyr_type=self.labyr_type.get())
         Robot(samplab)
-        self.draw_labyr(sample)
+        self.draw_labyr(samplab.labyr)
         self.instr = ttk.Label(self.mainframe, text=command_help, justify='left', padding=10)
         # Creating buttons
         self.buttstop = ttk.Button(self.controlframe, text=_('Stop (F7)'), command=self.stopcommand, state='disabled')
@@ -585,6 +600,11 @@ GOTO x\t Continue with line x''')
         self.root.mainloop()
 
     # Building menu and coder options
+    def change_labyr_type(self):
+        samplab = Labyrinth(x=self.x, y=self.y, labyr_type=self.labyr_type.get())
+        Robot(samplab)
+        self.draw_labyr(samplab.labyr)
+
     def change_language(self, event=None):
         if language != self.lang_value.get():
             cfgfile = open(dirs.user_config_dir + '/algotaurus.ini', 'w')
@@ -757,7 +777,7 @@ GOTO x\t Continue with line x''')
         self.canvas.configure(width=self.size*(self.x+4), height=self.size*(self.y+4))
         self.root.update()
         # Drawing the labyrinth
-        lab = Labyrinth(self.x, self.y)
+        lab = Labyrinth(x=self.x, y=self.y, labyr_type=self.labyr_type.get())
         labyr = lab.labyr
         robot = Robot(lab)
         script = Script(edited_text, robot, max_line=lines)
