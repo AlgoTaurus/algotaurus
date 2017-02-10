@@ -46,6 +46,8 @@ If you want to use AlgoTaurus in other languages, you can help translating it on
 ## Changelog
 
 Version 1.1
+- Multiple labyrinth types
+  - Simple 4-walls "labyrinth"
 - User interface and commands are localizable
 - Hungarian version 
 
