@@ -586,10 +586,12 @@ GOTO x\t Continue with line x''')
 
     # Building menu and coder options
     def change_language(self, event=None):
+        global language
         if language != self.lang_value.get():
             cfgfile = open(dirs.user_config_dir + '/algotaurus.ini', 'w')
             config.set('settings', 'language', self.lang_value.get())
             config.write(cfgfile)
+            language = self.lang_value.get()
             self.tkMessageBox.showinfo(title=_('Info'), message=_('Changes will be applied on the next startup'))
 
     def validate_input(self, event):
