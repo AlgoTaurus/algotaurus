@@ -619,7 +619,13 @@ GOTO x\t Continue with line x''')
             self.textPad.delete(endline, 'end')
 
     def new_command(self, event=None):
-        self.textPad.delete('1.0', 'end')
+        if self.textPad.get('1.0', 'end'+'-1c') != '':
+            if self.tkMessageBox.askokcancel(_('Warning'),
+                                             _('Do you really want to erease the content of the coder?')):
+                if self.tkMessageBox.askokcancel(_('Question'),
+                                                 _('Do you want to save the current code?')):
+                    self.save_command()
+                self.textPad.delete('1.0', 'end')
 
     def open_command(self, event=None):
         at_file = self.tkFileDialog.askopenfile(parent=self.root, mode='rb', title=_('Select a file'),
