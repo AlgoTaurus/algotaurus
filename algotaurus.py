@@ -537,11 +537,9 @@ GOTO x\t Continue with line x''')
         
         # Creating the two main frames
         self.mainframe = tk.Frame()
-        self.speedframe = tk.Frame()
         self.controlframe = tk.Frame()
         self.mainframe.pack()
-        self.speedframe.place(relx=0.0, rely=1.0, x=-2, y=-3, anchor="sw")
-        self.controlframe.place(relx=1.0, rely=1.0, x=-2, y=-3, anchor="se")
+        self.controlframe.place(relx=0.0, rely=1.0, x=-2, y=-3, anchor="sw")
 
         # Creating coder widget
         self.rt_str = tk.StringVar()
@@ -553,7 +551,7 @@ GOTO x\t Continue with line x''')
         self.linebox.insert('1.0', numbers)
         self.linebox.configure(bg='grey', fg='black', state='disabled', relief='flat')
         self.codertitle = ttk.Label(self.mainframe, text=_('Coder'), justify='center')
-        self.timerlabel = ttk.Label(self.speedframe, textvariable=self.rt_str)
+        self.timerlabel = ttk.Label(self.controlframe, textvariable=self.rt_str)
         self.textPad.bind('<Button-3>', self.rclick)
         self.textPad.bind('<Key>', self.validate_input)        
         # Creating canvas and drawing sample labyrinth
@@ -566,8 +564,8 @@ GOTO x\t Continue with line x''')
         self.buttstop = ttk.Button(self.controlframe, text=_('Stop (F7)'), command=self.stopcommand, state='disabled')
         self.buttstep = ttk.Button(self.controlframe, text=_('Step (F6)'), command=self.stepmode)
         self.buttrun = ttk.Button(self.controlframe, text=_('Run (F5)'), command=self.runmode)
-        self.buttspdown = ttk.Button(self.speedframe, text=_('Speed down (F2)'), command=self.speed_down)
-        self.buttspup = ttk.Button(self.speedframe, text=_('Speed up (F3)'), command=self.speed_up)
+        self.buttspdown = ttk.Button(self.controlframe, text=_('Slower (F2)'), command=self.speed_down)
+        self.buttspup = ttk.Button(self.controlframe, text=_('Faster (F3)'), command=self.speed_up)
     
         # Placing widgets on the frames with grid geometry manager
 
@@ -580,12 +578,12 @@ GOTO x\t Continue with line x''')
         #self.codelabel.grid(column=3, row=0, sticky='n')
         ttk.Label(self.mainframe, text='\n\n').grid(row=3, columnspan=4)  # Adds an empty row to place the buttons
         # Widgets in buttonframe
-        self.buttspdown.grid(row=0, column=0, padx=10, pady=10)
-        self.buttspup.grid(row=0, column=1, padx=10, pady=10)
-        self.timerlabel.grid(row=0, column=2, pady=10)
-        self.buttrun.grid(row=0, column=0, padx=20, pady=10)
-        self.buttstep.grid(row=0, column=1, padx=20, pady=10)
-        self.buttstop.grid(row=0, column=2, padx=20, pady=10)
+        self.buttspdown.grid(row=1, column=0, padx=5, pady=10)
+        self.buttspup.grid(row=1, column=1, padx=5, pady=10)
+        self.timerlabel.grid(row=1, column=2, pady=10)
+        self.buttrun.grid(row=0, column=0, columnspan=2, padx=10)
+        self.buttstep.grid(row=0, column=2, padx=10)
+        self.buttstop.grid(row=0, column=3, padx=10)
         
         # Center the window and set the minimal size
         self.root.update()
