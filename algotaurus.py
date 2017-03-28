@@ -456,30 +456,24 @@ class AlgoTaurusGui:
 
         self.root.protocol('WM_DELETE_WINDOW', self.exit_command)
 
-        command_help = _(u'''Help AlgoTaurus to find the exit.
-
-Available commands:
-
-LEFT\t Turn left by 90°
-
-RIGHT\t Turn right by 90°
-
-STEP\t Step one square
-\t Ahead of wall and exit it crashes.
-           
-WALL? m n\t Is there a wall ahead?
+        # Build up instruction from smaller strings, so if anything is changed later, only the relevant part should
+        # be localized
+        command_help = '\n\n'.join([_('Help AlgoTaurus to find the exit.'),
+                        _('Available commands:'),
+                        _(u'LEFT\t Turn left by 90°'),
+                        _(u'RIGHT\t Turn right by 90°'),
+                        _('''STEP\t Step one square
+\t Ahead of wall and exit it crashes.'''),
+                        _('''WALL? m n\t Is there a wall ahead?
 \t If yes, continue with line m,
-\t otherwise with line n.
-           
-EXIT? m n\t Is there an exit ahead?
+\t otherwise with line n.'''),
+                        _('''EXIT? m n\t Is there an exit ahead?
 \t If yes, continue with line m,
-\t otherwise with line n.
-
-QUIT\t Leave the labyrinth
+\t otherwise with line n.'''),
+                        _('''QUIT\t Leave the labyrinth
 \t Ahead of empty field
-\t and wall it crashes.
-           
-GOTO m\t Continue with line m''')
+\t and wall it crashes.'''),
+                        _('''GOTO m\t Continue with line m''')])
 
         # Create menu for the GUI
         languages = {'Hungarian': 'hu', 'English': 'en'}  # do not localize this, because it could be hard for the ...
