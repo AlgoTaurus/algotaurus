@@ -465,10 +465,12 @@ STEP\t Step one square
 \t Ahead of wall and exit it crashes.
            
 WALL? m n\t Is there a wall ahead?
-\t If yes, continue with line n,
+\t If yes, continue with line m,
 \t otherwise with line n.
            
 EXIT? m n\t Is there an exit ahead?
+\t If yes, continue with line m,
+\t otherwise with line n.
 
 QUIT\t Leave the labyrinth
 \t Ahead of empty field
