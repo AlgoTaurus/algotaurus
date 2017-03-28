@@ -561,9 +561,9 @@ GOTO x\t Continue with line x''')
         self.draw_labyr(samplab.labyr)
         self.instr = ttk.Label(self.mainframe, text=command_help, justify='left', padding=10)
         # Creating buttons
-        self.buttstop = ttk.Button(self.controlframe, text=_('Stop (F7)'), command=self.stopcommand, state='disabled')
-        self.buttstep = ttk.Button(self.controlframe, text=_('Step (F6)'), command=self.stepmode)
-        self.buttrun = ttk.Button(self.controlframe, text=_('Run (F5)'), command=self.runmode)
+        self.buttstop = ttk.Button(self.controlframe, text=_('Stop code\nexecution (F7)'), command=self.stopcommand, state='disabled')
+        self.buttstep = ttk.Button(self.controlframe, text=_('Try the code\nLine by line (F6)'), command=self.stepmode)
+        self.buttrun = ttk.Button(self.controlframe, text=_('Try the code\nContinuously (F5)'), command=self.runmode)
         self.buttspdown = ttk.Button(self.controlframe, text=_('Slower (F2)'), command=self.speed_down)
         self.buttspup = ttk.Button(self.controlframe, text=_('Faster (F3)'), command=self.speed_up)
     
