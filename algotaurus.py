@@ -453,13 +453,13 @@ class AlgoTaurusGui:
 
         self.root.protocol('WM_DELETE_WINDOW', self.exit_command)
 
-        command_help = _('''Help AlgoTaurus to find the exit.
+        command_help = _(u'''Help AlgoTaurus to find the exit.
 
 Available commands:
 
-LEFT\t Turn left
+LEFT\t Turn left by 90°
 
-RIGHT\t Turn right
+RIGHT\t Turn right by 90°
 
 STEP\t Step one square
 \t Ahead of wall and exit it crashes.
