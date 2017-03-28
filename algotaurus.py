@@ -37,7 +37,7 @@ _ = t.ugettext
 [_('left'), _('right'), _('step'), _('wall?'), _('exit?'), _('quit'), _('goto')]  # for the generate_pot script
 local_commands = [_(command) for command in ['left', 'right', 'step', 'wall?', 'exit?', 'quit', 'goto']]
 
-labyr_type_names = ['Four walls', 'Depth first']
+labyr_type_names = [_('Four walls'), _('Depth first')]
 
 
 class Labyrinth:
