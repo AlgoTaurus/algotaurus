@@ -464,17 +464,17 @@ RIGHT\t Turn right
 STEP\t Step one square
 \t Ahead of wall and exit it crashes.
            
-WALL? x y\t Is there a wall ahead?
-\t If yes, continue with line x,
-\t otherwise with line y.
+WALL? m n\t Is there a wall ahead?
+\t If yes, continue with line n,
+\t otherwise with line n.
            
-EXIT? x y\t Is there an exit ahead?
+EXIT? m n\t Is there an exit ahead?
 
 QUIT\t Leave the labyrinth
 \t Ahead of empty field
 \t and wall it crashes.
            
-GOTO x\t Continue with line x''')
+GOTO m\t Continue with line m''')
 
         # Create menu for the GUI
         languages = {'Hungarian': 'hu', 'English': 'en'}  # do not localize this, because it could be hard for the ...
