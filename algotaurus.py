@@ -547,8 +547,6 @@ GOTO m\t Continue with line m''')
         self.controlframe.place(relx=0.0, rely=1.0, x=-2, y=-3, anchor="sw")
 
         # Creating coder widget
-        self.rt_str = tk.StringVar()
-        self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
         self.textPad = tk.Text(self.mainframe, width=15, height=self.lines, wrap='none')
         self.textPad.config(bg='white', fg='black')
         numbers = ''.join([str(i).ljust(2)+'\n' for i in range(1, self.lines+1)])
@@ -556,7 +554,6 @@ GOTO m\t Continue with line m''')
         self.linebox.insert('1.0', numbers)
         self.linebox.configure(bg='grey', fg='black', state='disabled', relief='flat')
         self.codertitle = ttk.Label(self.mainframe, text=_('Coder'), justify='center')
-        self.timerlabel = ttk.Label(self.controlframe, textvariable=self.rt_str)
         self.textPad.bind('<Button-3>', self.rclick)
         self.textPad.bind('<Key>', self.validate_input)        
         # Creating canvas and drawing sample labyrinth
@@ -585,7 +582,6 @@ GOTO m\t Continue with line m''')
         # Widgets in buttonframe
         self.buttspdown.grid(row=1, column=0, padx=5, pady=10)
         self.buttspup.grid(row=1, column=1, padx=5, pady=10)
-        self.timerlabel.grid(row=1, column=2, pady=10)
         self.buttrun.grid(row=0, column=0, columnspan=2, padx=10)
         self.buttstep.grid(row=0, column=2, padx=10)
         self.buttstop.grid(row=0, column=3, padx=10)
@@ -740,19 +736,21 @@ GOTO m\t Continue with line m''')
     def speed_up(self, event=None):
         if self.mode == 'step':
              self.rt_prev /= 2
-             self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
         elif self.run_timer > 2:
             self.run_timer /= 2
-            self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
+            self.buttspdown.configure(state='enabled')
+            if self.run_timer <= 2:
+                self.buttspup.configure(state='disabled')
 
     def speed_down(self, event=None):
         if self.mode == 'step':
             self.rt_prev *= 2
-            self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
         elif self.run_timer < 500:
             self.run_timer *= 2
-            self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
-                                                                                                
+            self.buttspup.configure(state='enabled')
+            if self.run_timer >= 500:
+                self.buttspdown.configure(state='disabled')
+
     def execute_code(self):
         """Running the script from the coder"""
         self.execute = True
