@@ -37,6 +37,9 @@ _ = t.ugettext
 [_('left'), _('right'), _('step'), _('wall?'), _('exit?'), _('quit'), _('goto')]  # for the generate_pot script
 local_commands = [_(command) for command in ['left', 'right', 'step', 'wall?', 'exit?', 'quit', 'goto']]
 
+labyr_type_names = ['Four walls', 'Depth first']
+
+
 class Labyrinth:
     def __init__(self, x=11, y=11, labyr_type=1):
         """Create labyrinth.
@@ -484,7 +487,7 @@ GOTO m\t Continue with line m''')
         self.lang_value = tk.StringVar()
         self.lang_value.set(language)
         self.labyr_type = tk.IntVar()
-        self.labyr_type.set(0)
+        self.labyr_type.set(1)
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
         self.root.config(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=False)
@@ -505,7 +508,7 @@ GOTO m\t Continue with line m''')
         self.typemenu = tk.Menu(self.labyrmenu, tearoff=False)
         self.labyrmenu.add_cascade(label=_('Type'), menu=self.typemenu)
         for labyr_type in [0, 1]:
-            self.typemenu.add_radiobutton(label=labyr_type, variable=self.labyr_type, value=labyr_type,
+            self.typemenu.add_radiobutton(label=labyr_type_names[labyr_type], variable=self.labyr_type, value=labyr_type,
                                           command=self.change_labyr_type)
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('AlgoTaurus'), menu=self.helpmenu)
