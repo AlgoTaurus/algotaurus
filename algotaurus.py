@@ -733,18 +733,18 @@ GOTO m\t Continue with line m''')
             self.execute_code()
             
     def speed_up(self, event=None):
-        if self.mode == 'step':
+        if self.mode == 'step' and self.rt_prev > 2:
              self.rt_prev /= 2
              self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
-        elif self.run_timer > 2:
+        elif self.mode != 'step' and self.run_timer > 2:
             self.run_timer /= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
 
     def speed_down(self, event=None):
-        if self.mode == 'step':
+        if self.mode == 'step' and self.rt_prev < 500:
             self.rt_prev *= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
-        elif self.run_timer < 500:
+        elif self.mode != 'step' and self.run_timer < 500:
             self.run_timer *= 2
             self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
                                                                                                 
