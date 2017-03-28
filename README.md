@@ -49,7 +49,9 @@ Version 1.1
 - Multiple labyrinth types
   - Simple 4-walls "labyrinth"
 - User interface and commands are localizable
-- Hungarian version 
+- Hungarian version
+- Usability refinements
+- Bug fixes
 
 Version 1.0
 - Initial release
