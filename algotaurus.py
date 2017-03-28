@@ -622,9 +622,6 @@ GOTO x\t Continue with line x''')
         if self.textPad.get('1.0', 'end'+'-1c') != '':
             if self.tkMessageBox.askokcancel(_('Warning'),
                                              _('Do you really want to erease the content of the coder?')):
-                if self.tkMessageBox.askokcancel(_('Question'),
-                                                 _('Do you want to save the current code?')):
-                    self.save_command()
                 self.textPad.delete('1.0', 'end')
 
     def open_command(self, event=None):
