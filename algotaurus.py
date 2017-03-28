@@ -606,7 +606,7 @@ GOTO x\t Continue with line x''')
         self.draw_labyr(samplab.labyr)
 
     def change_language(self, event=None):
-        if language != self.lang_value.get():
+        if config.get('settings', 'language') != self.lang_value.get():
             cfgfile = open(dirs.user_config_dir + '/algotaurus.ini', 'w')
             config.set('settings', 'language', self.lang_value.get())
             config.write(cfgfile)
