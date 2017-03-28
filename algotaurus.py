@@ -808,11 +808,11 @@ GOTO m\t Continue with line m''')
             if self.stop == 1:
                 break
         if not self.exit_flag:
+            if not self.stop:
+                self.tkMessageBox.showinfo('Result', result)
             self.linebox.configure(state='normal')
             self.linebox.delete(current_pos)
             self.linebox.configure(state='disabled')
-            if not self.stop:
-                self.tkMessageBox.showinfo('Result', result)
             self.buttstop.configure(state='disabled')
             self.buttstep.configure(state='normal')
             self.buttrun.configure(state='normal')
