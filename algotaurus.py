@@ -779,9 +779,10 @@ class AlgoTaurusGui:
                 self.move_robot(labyr)
                 if self.mode == 'step':
                     self.mode = 'wait'
-            else:
+            elif self.mode == 'wait':
+                time.sleep(0.2)
                 self.canvas.update()
-            if self.mode == 'stop':
+            elif self.mode == 'stop':
                 break
         if not self.exit_flag:
             if not self.mode == 'stop':
