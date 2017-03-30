@@ -777,7 +777,6 @@ class AlgoTaurusGui:
                 result = script.execute_command()
                 self.move_robot(labyr)
                 if self.mode == 'run':
-                    print self.run_timer
                     time.sleep(self.run_timer/1000)
                 if self.mode == 'step':
                     self.mode = 'wait'
