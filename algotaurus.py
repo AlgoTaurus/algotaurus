@@ -537,7 +537,7 @@ class AlgoTaurusGui:
         # Creating the two main frames
         self.mainframe = tk.Frame(master=self.root)
         self.controlframe = tk.Frame(master=self.mainframe)
-        self.mainframe.pack()
+        self.mainframe.pack(fill='both')
 
         # Creating coder widget
         self.textPad = tk.Text(self.mainframe, width=15, height=self.lines, wrap='none')
