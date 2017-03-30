@@ -535,10 +535,9 @@ class AlgoTaurusGui:
         self.root.bind('<F3>', self.speed_up)
         
         # Creating the two main frames
-        self.mainframe = tk.Frame()
-        self.controlframe = tk.Frame()
+        self.mainframe = tk.Frame(master=self.root)
+        self.controlframe = tk.Frame(master=self.mainframe)
         self.mainframe.pack()
-        self.controlframe.place(relx=0.0, rely=1.0, x=-2, y=-3, anchor="sw")
 
         # Creating coder widget
         self.textPad = tk.Text(self.mainframe, width=15, height=self.lines, wrap='none')
@@ -566,20 +565,20 @@ class AlgoTaurusGui:
         # Placing widgets on the frames with grid geometry manager
 
         # Widgets in mainframe
-        self.codertitle.grid(column=1, row=0, columnspan=2, pady=10)        
-        self.instr.grid(column=0, row=1, sticky='n')        
+        self.codertitle.grid(column=1, row=0, columnspan=2, pady=10)
+        self.instr.grid(column=0, row=1, sticky='n')
         self.linebox.grid(column=1, row=1, sticky='en')
         self.textPad.grid(column=2, row=1, sticky='wn')
         self.canvas.grid(column=3, row=1, sticky='ws', padx=20)
-        #self.codelabel.grid(column=3, row=0, sticky='n')
-        ttk.Label(self.mainframe, text='\n\n').grid(row=3, columnspan=4)  # Adds an empty row to place the buttons
+
         # Widgets in buttonframe
+
         self.buttspdown.grid(row=1, column=0, padx=5, pady=10)
         self.buttspup.grid(row=1, column=1, padx=5, pady=10)
         self.buttrun.grid(row=0, column=0, columnspan=2, padx=10)
         self.buttstep.grid(row=0, column=2, padx=10)
         self.buttstop.grid(row=0, column=3, padx=10)
-        
+        self.controlframe.grid(column=0, row=2, columnspan=3, padx=10, pady=10)
         # Center the window and set the minimal size
         self.root.update()
         w, h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
@@ -589,7 +588,8 @@ class AlgoTaurusGui:
         x = w/2 - size[0]/2
         y = h/2 - size[1]/2
         self.root.geometry("%dx%d+%d+%d" % (size + (x, y)))
-        self.root.minsize(winw, winh)
+        self.root.update()
+        self.root.minsize(self.root.winfo_width(), self.root.winfo_height())
         self.root.mainloop()
 
     # Building menu and coder options
