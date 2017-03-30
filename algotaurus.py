@@ -703,18 +703,16 @@ class AlgoTaurusGui:
     
     # Button commands
     def stopcommand(self, event=None):
-        self.stop = 1
+        self.mode = 'stop'
 
     def stepmode(self, event=None):
         self.mode = 'step'
-        self.step = 1
         self.buttrun.configure(state='normal')
         if self.execute == False:
             self.execute_code()
 
     def runmode(self, event=None):
         self.mode = 'run'
-        self.step = 1
         self.buttrun.configure(state='disabled')
         if self.execute == False:
             self.execute_code()
@@ -736,7 +734,6 @@ class AlgoTaurusGui:
     def execute_code(self):
         """Running the script from the coder"""
         self.execute = True
-        self.stop = 0
         self.buttstop.configure(state='normal')
         self.textPad.configure(state='disabled', bg='white smoke')
         self.textPad.see('1.0')
@@ -771,9 +768,8 @@ class AlgoTaurusGui:
         self.canvas.update()
         self.canvas.after(1000)
         current_pos = 'end'
-        self.step = 1
         while result == 'go on' and not self.exit_flag:
-            if self.step == 1:
+            if self.mode in ['run', 'step']:
                 self.linebox.config(state='normal')
                 self.linebox.delete(current_pos)
                 current_pos = str(script.current_line)+'.2'
@@ -782,13 +778,13 @@ class AlgoTaurusGui:
                 result = script.execute_command()
                 self.move_robot(labyr)
                 if self.mode == 'step':
-                    self.step = 0
+                    self.mode = 'wait'
             else:
                 self.canvas.update()
-            if self.stop == 1:
+            if self.mode == 'stop':
                 break
         if not self.exit_flag:
-            if not self.stop:
+            if not self.mode == 'stop':
                 self.tkMessageBox.showinfo('Result', result)
             self.linebox.configure(state='normal')
             self.linebox.delete(current_pos)
