@@ -777,11 +777,11 @@ class AlgoTaurusGui:
                 result = script.execute_command()
                 self.move_robot(labyr)
                 if self.mode == 'run':
-                    time.sleep(self.run_timer/1000)
+                    self.canvas.after(int(self.run_timer))
                 if self.mode == 'step':
                     self.mode = 'wait'
             elif self.mode == 'wait':
-                time.sleep(0.2)
+                self.canvas.after(200)
                 self.canvas.update()
             elif self.mode == 'stop':
                 break
