@@ -440,7 +440,6 @@ class AlgoTaurusGui:
         self.x = 27
         self.y = 27
         self.run_timer = 5.0
-        self.rt_prev = 0
         self.mode = None
         self.execute = False
         self.exit_flag=False
@@ -705,14 +704,9 @@ class AlgoTaurusGui:
     # Button commands
     def stopcommand(self, event=None):
         self.stop = 1
-        if self.rt_prev:
-            self.run_timer = self.rt_prev
-            
+
     def stepmode(self, event=None):
         self.mode = 'step'
-        if self.run_timer != 0:
-            self.rt_prev = self.run_timer
-            self.run_timer = 0
         self.step = 1
         self.buttrun.configure(state='normal')
         if self.execute == False:
@@ -720,26 +714,20 @@ class AlgoTaurusGui:
 
     def runmode(self, event=None):
         self.mode = 'run'
-        if self.rt_prev:
-            self.run_timer = self.rt_prev
         self.step = 1
         self.buttrun.configure(state='disabled')
         if self.execute == False:
             self.execute_code()
             
     def speed_up(self, event=None):
-        if self.mode == 'step':
-             self.rt_prev /= 2
-        elif self.run_timer > 2:
+        if self.run_timer > 2:
             self.run_timer /= 2
             self.buttspdown.configure(state='enabled')
             if self.run_timer <= 2:
                 self.buttspup.configure(state='disabled')
 
     def speed_down(self, event=None):
-        if self.mode == 'step':
-            self.rt_prev *= 2
-        elif self.run_timer < 500:
+        if self.run_timer < 500:
             self.run_timer *= 2
             self.buttspup.configure(state='enabled')
             if self.run_timer >= 500:
