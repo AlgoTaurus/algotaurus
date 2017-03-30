@@ -689,7 +689,6 @@ class AlgoTaurusGui:
     
     def move_robot(self, labyr):
         """Moving the robot on the canvas"""
-        self.canvas.after(int(self.run_timer))
         self.canvas.delete(self.labrobot)
         robot = labyr.max()
         col, row = tuple(int(i) for i in (np.where(labyr == robot)))
@@ -777,6 +776,9 @@ class AlgoTaurusGui:
                 self.linebox.config(state='disabled')
                 result = script.execute_command()
                 self.move_robot(labyr)
+                if self.mode == 'run':
+                    print self.run_timer
+                    time.sleep(self.run_timer/1000)
                 if self.mode == 'step':
                     self.mode = 'wait'
             elif self.mode == 'wait':
