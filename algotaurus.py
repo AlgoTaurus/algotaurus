@@ -121,9 +121,9 @@ class Robot:
     
     def step(self):
         if self.labyr[tuple(self.facing_pos)] == 1:
-            return _('Game over. AlgoTaurus run into wall.')
+            return _('Bad news. AlgoTaurus run into wall.')
         elif self.labyr[tuple(self.facing_pos)] == 2:
-            return _('Game over. AlgoTaurus stepped into exit.')
+            return _('Bad news. AlgoTaurus stepped into exit.')
         else:
             self.previous_pos = self.pos[:]
             self.pos = self.facing_pos
@@ -145,7 +145,7 @@ class Robot:
         if self.labyr[tuple(self.facing_pos)] == 2:
             return _('Congratulations! AlgoTaurus successfully reached the exit.')
         else:
-            return _('Game over. AlgoTaurus was not in the exit yet.')
+            return _('Bad news. AlgoTaurus was not in the exit yet.')
     
     def wall(self):
         return True if self.labyr[tuple(self.facing_pos)] == 1 else False
@@ -175,7 +175,7 @@ class Script:
         
         # Check if we reached the end without a solution
         if self.current_line > self.max_line:
-            return _('Game over. Code ended.')
+            return _('Bad news. Code ended.')
 
         # Skip empty line
         if self.code[self.current_line].rstrip() == '':
