@@ -744,14 +744,7 @@ class AlgoTaurusGui:
             result = 'go on'
         self.canvas.delete('all')
         lines = edited_text.count('\n')+1
-        for i in edited_text:
-            try:
-                int(i)
-                if int(i) > lines:
-                    result = _('Wrong code: some reference is larger than number of lines!')
-            except:
-                pass
-            
+
         # Resizing labyrinth to fit to the current window size
         self.root.update()
         w, h = self.root.winfo_width(), self.root.winfo_height()
