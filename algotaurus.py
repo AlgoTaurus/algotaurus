@@ -734,6 +734,7 @@ class AlgoTaurusGui:
         """Running the script from the coder"""
         self.execute = True
         self.buttstop.configure(state='normal')
+        self.labyrmenu.entryconfig("Type", state="disabled")
         self.textPad.configure(state='disabled', bg='white smoke')
         self.textPad.see('1.0')
         edited_text = self.textPad.get('1.0', 'end'+'-1c')
@@ -788,6 +789,7 @@ class AlgoTaurusGui:
             self.buttstep.configure(state='normal')
             self.buttrun.configure(state='normal')
             self.textPad.configure(state='normal', bg='white')
+            self.labyrmenu.entryconfig("Type", state='normal')
             self.execute = False
 
 
