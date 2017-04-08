@@ -593,15 +593,12 @@ class AlgoTaurusGui:
 
     # Building menu and coder options
     def change_labyr_type(self):
-        change = True
         if self.mode in ['step', 'run']:
             if self.tkMessageBox.askokcancel(_('Warning'),
                                              _('Changing the labyrinth type interrupts the code execution and redraws '
                                                'the labyrinth.\nAre you sure you want to change the labyrinth type?')):
                 self.mode = 'stop'
-            else:
-                change = False
-        if change:
+        if self.mode not in ['step', 'run']:
             samplab = Labyrinth(x=self.x, y=self.y, labyr_type=self.labyr_type.get())
             Robot(samplab)
             self.draw_labyr(samplab.labyr)
