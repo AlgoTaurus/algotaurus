@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-28 19:24+0200\n"
+"POT-Creation-Date: 2017-03-31 07:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,11 +54,11 @@ msgid "Depth first"
 msgstr ""
 
 #: .././algotaurus.py:124
-msgid "Game over. AlgoTaurus run into wall."
+msgid "Bad news. AlgoTaurus run into wall."
 msgstr ""
 
 #: .././algotaurus.py:126
-msgid "Game over. AlgoTaurus stepped into exit."
+msgid "Bad news. AlgoTaurus stepped into exit."
 msgstr ""
 
 #: .././algotaurus.py:146
@@ -66,11 +66,11 @@ msgid "Congratulations! AlgoTaurus successfully reached the exit."
 msgstr ""
 
 #: .././algotaurus.py:148
-msgid "Game over. AlgoTaurus was not in the exit yet."
+msgid "Bad news. AlgoTaurus was not in the exit yet."
 msgstr ""
 
 #: .././algotaurus.py:178
-msgid "Game over. Code ended."
+msgid "Bad news. Code ended."
 msgstr ""
 
 #: .././algotaurus.py:190
@@ -101,193 +101,189 @@ msgstr ""
 msgid "Syntax error. Goto command needs a number."
 msgstr ""
 
-#: .././algotaurus.py:461
+#: .././algotaurus.py:460
 msgid "Help AlgoTaurus to find the exit."
 msgstr ""
 
-#: .././algotaurus.py:462
+#: .././algotaurus.py:461
 msgid "Available commands:"
 msgstr ""
 
-#: .././algotaurus.py:463
+#: .././algotaurus.py:462
 msgid "LEFT\t Turn left by 90°"
 msgstr ""
 
-#: .././algotaurus.py:464
+#: .././algotaurus.py:463
 msgid "RIGHT\t Turn right by 90°"
 msgstr ""
 
-#: .././algotaurus.py:465
+#: .././algotaurus.py:464
 msgid ""
 "STEP\t Step one square\n"
 "\t Ahead of wall and exit it crashes."
 msgstr ""
 
-#: .././algotaurus.py:467
+#: .././algotaurus.py:466
 msgid ""
 "WALL? m n\t Is there a wall ahead?\n"
 "\t If yes, continue with line m,\n"
 "\t otherwise with line n."
 msgstr ""
 
-#: .././algotaurus.py:470
+#: .././algotaurus.py:469
 msgid ""
 "EXIT? m n\t Is there an exit ahead?\n"
 "\t If yes, continue with line m,\n"
 "\t otherwise with line n."
 msgstr ""
 
-#: .././algotaurus.py:473
+#: .././algotaurus.py:472
 msgid ""
 "QUIT\t Leave the labyrinth\n"
 "\t Ahead of empty field\n"
 "\t and wall it crashes."
 msgstr ""
 
-#: .././algotaurus.py:476
+#: .././algotaurus.py:475
 msgid "GOTO m\t Continue with line m"
 msgstr ""
 
-#: .././algotaurus.py:488
+#: .././algotaurus.py:487
 msgid "Code file"
 msgstr ""
 
-#: .././algotaurus.py:489
+#: .././algotaurus.py:488
 msgid "New"
 msgstr ""
 
-#: .././algotaurus.py:490
+#: .././algotaurus.py:489
 msgid "Open..."
 msgstr ""
 
-#: .././algotaurus.py:491
+#: .././algotaurus.py:490
 msgid "Save"
 msgstr ""
 
-#: .././algotaurus.py:494
+#: .././algotaurus.py:493
 msgid "Code edit"
 msgstr ""
 
-#: .././algotaurus.py:495 .././algotaurus.py:517
+#: .././algotaurus.py:494 .././algotaurus.py:516
 msgid "Copy"
 msgstr ""
 
-#: .././algotaurus.py:496 .././algotaurus.py:518
+#: .././algotaurus.py:495 .././algotaurus.py:517
 msgid "Cut"
 msgstr ""
 
-#: .././algotaurus.py:497 .././algotaurus.py:519
+#: .././algotaurus.py:496 .././algotaurus.py:518
 msgid "Paste"
 msgstr ""
 
-#: .././algotaurus.py:499
+#: .././algotaurus.py:498
 msgid "Select All"
 msgstr ""
 
-#: .././algotaurus.py:501
+#: .././algotaurus.py:500
 msgid "Labyrinth"
 msgstr ""
 
-#: .././algotaurus.py:503
+#: .././algotaurus.py:502
 msgid "Type"
 msgstr ""
 
-#: .././algotaurus.py:508
+#: .././algotaurus.py:507
 msgid "AlgoTaurus"
 msgstr ""
 
-#: .././algotaurus.py:510
+#: .././algotaurus.py:509
 msgid "Language"
 msgstr ""
 
-#: .././algotaurus.py:514
+#: .././algotaurus.py:513
 msgid "About..."
 msgstr ""
 
-#: .././algotaurus.py:515
+#: .././algotaurus.py:514
 msgid "Exit"
 msgstr ""
 
-#: .././algotaurus.py:550
+#: .././algotaurus.py:548
 msgid "Coder"
 msgstr ""
 
-#: .././algotaurus.py:560
+#: .././algotaurus.py:558
 msgid ""
 "Stop code\n"
 "execution (F7)"
 msgstr ""
 
-#: .././algotaurus.py:561
+#: .././algotaurus.py:559
 msgid ""
 "Try the code\n"
 "Line by line (F6)"
 msgstr ""
 
-#: .././algotaurus.py:562
+#: .././algotaurus.py:560
 msgid ""
 "Try the code\n"
 "Continuously (F5)"
 msgstr ""
 
-#: .././algotaurus.py:563
+#: .././algotaurus.py:561
 msgid "Slower (F2)"
 msgstr ""
 
-#: .././algotaurus.py:564
+#: .././algotaurus.py:562
 msgid "Faster (F3)"
 msgstr ""
 
-#: .././algotaurus.py:606
+#: .././algotaurus.py:605
 msgid "Info"
 msgstr ""
 
-#: .././algotaurus.py:606
+#: .././algotaurus.py:605
 msgid "Changes will be applied on the next startup"
 msgstr ""
 
-#: .././algotaurus.py:616
+#: .././algotaurus.py:615
 msgid "Warning"
 msgstr ""
 
-#: .././algotaurus.py:617
+#: .././algotaurus.py:616
 msgid "Do you really want to erease the content of the coder?"
 msgstr ""
 
-#: .././algotaurus.py:621
+#: .././algotaurus.py:620
 msgid "Select a file"
 msgstr ""
 
-#: .././algotaurus.py:622 .././algotaurus.py:631
+#: .././algotaurus.py:621 .././algotaurus.py:630
 msgid "AlgoTaurus syntaxes"
 msgstr ""
 
-#: .././algotaurus.py:622 .././algotaurus.py:631
+#: .././algotaurus.py:621 .././algotaurus.py:630
 msgid "all files"
 msgstr ""
 
-#: .././algotaurus.py:640
+#: .././algotaurus.py:639
 msgid "Quit"
 msgstr ""
 
-#: .././algotaurus.py:640
+#: .././algotaurus.py:639
 msgid "Do you really want to quit?"
 msgstr ""
 
-#: .././algotaurus.py:645
+#: .././algotaurus.py:644
 msgid "About"
 msgstr ""
 
-#: .././algotaurus.py:645
+#: .././algotaurus.py:644
 msgid ""
 "AlgoTaurus 1.1\n"
 "Copyright © 2015-2017 Attila Krajcsi and Ádám Markója"
 msgstr ""
 
-#: .././algotaurus.py:758
+#: .././algotaurus.py:742
 msgid "There is no command to execute!"
-msgstr ""
-
-#: .././algotaurus.py:767
-msgid "Wrong code: some reference is larger than number of lines!"
 msgstr ""

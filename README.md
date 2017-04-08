@@ -8,12 +8,13 @@ Write a program to make the AlgoTaurus find the exit.
 ## Installation
 
 On Windows
-- Download the installer from [SourceForge] (http://sourceforge.net/projects/algotaurus/)
+- Download the installer from the [Relase page](https://github.com/AlgoTaurus/algotaurus/releases) or from [SourceForge](http://sourceforge.net/projects/algotaurus/)
 - After installation you can run AlgoTaurus from the Start menu.
 
 On Linux
-- Download the source files (Download ZIP button on the right of the screen).
-- Open terminal in the directory you have copied the files to and type 'python algotaurus.py' 
+- Download the source files from the [Relase page](https://github.com/AlgoTaurus/algotaurus/releases) and unzip them.
+- Open terminal in the directory you have copied the files to and type 'python algotaurus.py'
+- (Or you can use the Windows version with Wine.)
 
 ## Usage
 
@@ -45,11 +46,16 @@ If you want to use AlgoTaurus in other languages, you can help translating it on
 
 ## Changelog
 
+Version 1.1.1
+- Add menu shortcuts
+- Add Help to AlgoTaurus menu
+- Bug fixes
+
 Version 1.1
 - Multiple labyrinth types
   - Simple 4-walls "labyrinth"
 - User interface and commands are localizable
-- Hungarian version
+  - Hungarian version
 - Usability refinements
 - Bug fixes
 
@@ -60,6 +66,6 @@ Version 1.0
 
 The game is a remake and an extension of the game Labirint by Lukyanov Konstantin and Volkov Sergey.
 
-Copyright, 2015, Attila Krajcsi, Ádám Markója (GUI)
+Copyright, 2015-2017, Attila Krajcsi, Ádám Markója (GUI)
 
 AlgoTaurus is distributed under the terms of the GNU General Public License 3.

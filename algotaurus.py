@@ -21,17 +21,18 @@ import gettext
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
+at_dir = os.path.dirname(os.path.abspath(__file__))
 if not os.path.isfile(dirs.user_config_dir+'/algotaurus.ini'):
     import shutil
     if not os.path.exists(dirs.user_config_dir):
         os.makedirs(dirs.user_config_dir)
-    shutil.copyfile(os.path.dirname(os.path.abspath(__file__))+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
+    shutil.copyfile(at_dir+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
 config = ConfigParser.RawConfigParser()
 config.read(dirs.user_config_dir+'/algotaurus.ini')
 language = config.get('settings', 'language')
 
 # Set language for localization
-t = gettext.translation('algotaurus', os.path.dirname(os.path.abspath(__file__))+'/locale/', [language], fallback=True)
+t = gettext.translation('algotaurus', at_dir+'/locale/', [language], fallback=True)
 _ = t.ugettext
 # Only the GUI is localized now, not the TUI
 [_('left'), _('right'), _('step'), _('wall?'), _('exit?'), _('quit'), _('goto')]  # for the generate_pot script
@@ -121,9 +122,9 @@ class Robot:
     
     def step(self):
         if self.labyr[tuple(self.facing_pos)] == 1:
-            return _('Game over. AlgoTaurus run into wall.')
+            return _('Bad news. AlgoTaurus run into wall.')
         elif self.labyr[tuple(self.facing_pos)] == 2:
-            return _('Game over. AlgoTaurus stepped into exit.')
+            return _('Bad news. AlgoTaurus stepped into exit.')
         else:
             self.previous_pos = self.pos[:]
             self.pos = self.facing_pos
@@ -145,7 +146,7 @@ class Robot:
         if self.labyr[tuple(self.facing_pos)] == 2:
             return _('Congratulations! AlgoTaurus successfully reached the exit.')
         else:
-            return _('Game over. AlgoTaurus was not in the exit yet.')
+            return _('Bad news. AlgoTaurus was not in the exit yet.')
     
     def wall(self):
         return True if self.labyr[tuple(self.facing_pos)] == 1 else False
@@ -175,7 +176,7 @@ class Script:
         
         # Check if we reached the end without a solution
         if self.current_line > self.max_line:
-            return _('Game over. Code ended.')
+            return _('Bad news. Code ended.')
 
         # Skip empty line
         if self.code[self.current_line].rstrip() == '':
@@ -428,11 +429,13 @@ class AlgoTaurusGui:
         import tkFileDialog
         import tkMessageBox
         import ttk
+        import webbrowser
 
         self.tk = tk
         self.ttk = ttk
         self.tkFileDialog = tkFileDialog
         self.tkMessageBox = tkMessageBox
+        self.webbrowser = webbrowser
 
         # Initial parameters
         self.size = size
@@ -440,7 +443,6 @@ class AlgoTaurusGui:
         self.x = 27
         self.y = 27
         self.run_timer = 5.0
-        self.rt_prev = 0
         self.mode = None
         self.execute = False
         self.exit_flag=False
@@ -449,9 +451,9 @@ class AlgoTaurusGui:
 
         # tk limitation for icon use: http://stackoverflow.com/questions/11176638/python-setting-application-icon
         if os.name == 'nt':
-            self.root.iconbitmap('maze.ico')
+            self.root.iconbitmap(at_dir+'/maze.ico')
         else:
-            img = tk.PhotoImage(file='maze.png')
+            img = tk.PhotoImage(file=at_dir+'/maze.png')
             self.root.tk.call('wm', 'iconphoto', self.root._w, img)
 
         self.root.protocol('WM_DELETE_WINDOW', self.exit_command)
@@ -478,6 +480,7 @@ class AlgoTaurusGui:
         # Create menu for the GUI
         languages = {'Hungarian': 'hu', 'English': 'en'}  # do not localize this, because it could be hard for the ...
         # user to switch back after switching accidently to an unknown language
+        help_url = 'https://github.com/AlgoTaurus/algotaurus/'
         self.lang_value = tk.StringVar()
         self.lang_value.set(language)
         self.labyr_type = tk.IntVar()
@@ -489,7 +492,6 @@ class AlgoTaurusGui:
         self.filemenu.add_command(label=_('New'), command=self.new_command, accelerator='Ctrl+N')
         self.filemenu.add_command(label=_('Open...'), command=self.open_command, accelerator='Ctrl+O')
         self.filemenu.add_command(label=_('Save'), command=self.save_command, accelerator='Ctrl+S')
-        #self.filemenu.add_separator()
         self.editmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('Code edit'), menu=self.editmenu)
         self.editmenu.add_command(label=_('Copy'), command=self.copy_command, accelerator='Ctrl+C')
@@ -507,11 +509,14 @@ class AlgoTaurusGui:
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('AlgoTaurus'), menu=self.helpmenu)
         self.languagemenu = tk.Menu(self.helpmenu, tearoff=False)
+        self.helpmenu.add_command(label=_('Help'), accelerator='F1',
+                                  command=lambda: self.webbrowser.open_new(help_url),)
         self.helpmenu.add_cascade(label=_('Language'), menu=self.languagemenu)
         for lang in sorted(languages.keys()):
             self.languagemenu.add_radiobutton(label=lang, variable=self.lang_value, value=languages[lang],
                                               command = self.change_language)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
+        self.helpmenu.add_separator()
         self.helpmenu.add_command(label=_('Exit'), command=self.exit_command, accelerator='Ctrl+Q')
         self.rclickmenu = tk.Menu(self.menu, tearoff=False)
         self.rclickmenu.add_command(label=_('Copy'), command=self.copy_command)
@@ -528,17 +533,29 @@ class AlgoTaurusGui:
         self.root.bind('<Control-a>', self.sel_all)
         self.root.bind('<Control-A>', self.sel_all)        
         # Hotkeys
+        self.root.bind('<F1>', lambda x: self.webbrowser.open_new(help_url))
         self.root.bind('<F5>', self.runmode)
         self.root.bind('<F6>', self.stepmode)
         self.root.bind('<F7>', self.stopcommand)
         self.root.bind('<F2>', self.speed_down)
         self.root.bind('<F3>', self.speed_up)
         
+        # Build menu item shortcuts
+        for menu in [self.menu, self.filemenu, self.editmenu, self.labyrmenu,
+                     self.typemenu, self.helpmenu, self.languagemenu, self.rclickmenu]:
+            ch_list = []
+            for i in range(menu.index('end')+1):
+                if menu.type(i) not in ['tearoff', 'separator']:
+                    for ch_i, ch in enumerate(menu.entrycget(i, 'label')):
+                        if ch not in ch_list and ch != ' ':
+                            menu.entryconfig(i, underline=ch_i)
+                            ch_list.append(ch)
+                            break
+
         # Creating the two main frames
-        self.mainframe = tk.Frame()
-        self.controlframe = tk.Frame()
-        self.mainframe.pack()
-        self.controlframe.place(relx=0.0, rely=1.0, x=-2, y=-3, anchor="sw")
+        self.mainframe = tk.Frame(master=self.root)
+        self.controlframe = tk.Frame(master=self.mainframe)
+        self.mainframe.pack(fill='both')
 
         # Creating coder widget
         self.textPad = tk.Text(self.mainframe, width=15, height=self.lines, wrap='none')
@@ -566,20 +583,20 @@ class AlgoTaurusGui:
         # Placing widgets on the frames with grid geometry manager
 
         # Widgets in mainframe
-        self.codertitle.grid(column=1, row=0, columnspan=2, pady=10)        
-        self.instr.grid(column=0, row=1, sticky='n')        
+        self.codertitle.grid(column=1, row=0, columnspan=2, pady=10)
+        self.instr.grid(column=0, row=1, sticky='n')
         self.linebox.grid(column=1, row=1, sticky='en')
         self.textPad.grid(column=2, row=1, sticky='wn')
         self.canvas.grid(column=3, row=1, sticky='ws', padx=20)
-        #self.codelabel.grid(column=3, row=0, sticky='n')
-        ttk.Label(self.mainframe, text='\n\n').grid(row=3, columnspan=4)  # Adds an empty row to place the buttons
+
         # Widgets in buttonframe
+
         self.buttspdown.grid(row=1, column=0, padx=5, pady=10)
         self.buttspup.grid(row=1, column=1, padx=5, pady=10)
         self.buttrun.grid(row=0, column=0, columnspan=2, padx=10)
         self.buttstep.grid(row=0, column=2, padx=10)
         self.buttstop.grid(row=0, column=3, padx=10)
-        
+        self.controlframe.grid(column=0, row=2, columnspan=3, padx=10, pady=10)
         # Center the window and set the minimal size
         self.root.update()
         w, h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
@@ -589,14 +606,21 @@ class AlgoTaurusGui:
         x = w/2 - size[0]/2
         y = h/2 - size[1]/2
         self.root.geometry("%dx%d+%d+%d" % (size + (x, y)))
-        self.root.minsize(winw, winh)
+        self.root.update()
+        self.root.minsize(self.root.winfo_width(), self.root.winfo_height())
         self.root.mainloop()
 
     # Building menu and coder options
     def change_labyr_type(self):
-        samplab = Labyrinth(x=self.x, y=self.y, labyr_type=self.labyr_type.get())
-        Robot(samplab)
-        self.draw_labyr(samplab.labyr)
+        if self.mode in ['step', 'run']:
+            if self.tkMessageBox.askokcancel(_('Warning'),
+                                             _('Changing the labyrinth type interrupts the code execution and redraws '
+                                               'the labyrinth.\nAre you sure you want to change the labyrinth type?')):
+                self.mode = 'stop'
+        if self.mode not in ['step', 'run']:
+            samplab = Labyrinth(x=self.x, y=self.y, labyr_type=self.labyr_type.get())
+            Robot(samplab)
+            self.draw_labyr(samplab.labyr)
 
     def change_language(self, event=None):
         if config.get('settings', 'language') != self.lang_value.get():
@@ -642,7 +666,7 @@ class AlgoTaurusGui:
             self.root.destroy()
 
     def about_command(self, event=None):
-        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus 1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'))
+        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus 1.1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'))
 
     def sel_all(self, event=None):
         self.textPad.tag_add('sel', '1.0', 'end')
@@ -690,7 +714,6 @@ class AlgoTaurusGui:
     
     def move_robot(self, labyr):
         """Moving the robot on the canvas"""
-        self.canvas.after(int(self.run_timer))
         self.canvas.delete(self.labrobot)
         robot = labyr.max()
         col, row = tuple(int(i) for i in (np.where(labyr == robot)))
@@ -704,42 +727,29 @@ class AlgoTaurusGui:
     
     # Button commands
     def stopcommand(self, event=None):
-        self.stop = 1
-        if self.rt_prev:
-            self.run_timer = self.rt_prev
-            
+        self.mode = 'stop'
+
     def stepmode(self, event=None):
         self.mode = 'step'
-        if self.run_timer != 0:
-            self.rt_prev = self.run_timer
-            self.run_timer = 0
-        self.step = 1
         self.buttrun.configure(state='normal')
         if self.execute == False:
             self.execute_code()
 
     def runmode(self, event=None):
         self.mode = 'run'
-        if self.rt_prev:
-            self.run_timer = self.rt_prev
-        self.step = 1
         self.buttrun.configure(state='disabled')
         if self.execute == False:
             self.execute_code()
             
     def speed_up(self, event=None):
-        if self.mode == 'step':
-             self.rt_prev /= 2
-        elif self.run_timer > 2:
+        if self.run_timer > 2:
             self.run_timer /= 2
             self.buttspdown.configure(state='enabled')
             if self.run_timer <= 2:
                 self.buttspup.configure(state='disabled')
 
     def speed_down(self, event=None):
-        if self.mode == 'step':
-            self.rt_prev *= 2
-        elif self.run_timer < 500:
+        if self.run_timer < 500:
             self.run_timer *= 2
             self.buttspup.configure(state='enabled')
             if self.run_timer >= 500:
@@ -748,7 +758,6 @@ class AlgoTaurusGui:
     def execute_code(self):
         """Running the script from the coder"""
         self.execute = True
-        self.stop = 0
         self.buttstop.configure(state='normal')
         self.textPad.configure(state='disabled', bg='white smoke')
         self.textPad.see('1.0')
@@ -760,14 +769,7 @@ class AlgoTaurusGui:
             result = 'go on'
         self.canvas.delete('all')
         lines = edited_text.count('\n')+1
-        for i in edited_text:
-            try:
-                int(i)
-                if int(i) > lines:
-                    result = _('Wrong code: some reference is larger than number of lines!')
-            except:
-                pass
-            
+
         # Resizing labyrinth to fit to the current window size
         self.root.update()
         w, h = self.root.winfo_width(), self.root.winfo_height()
@@ -783,9 +785,8 @@ class AlgoTaurusGui:
         self.canvas.update()
         self.canvas.after(1000)
         current_pos = 'end'
-        self.step = 1
         while result == 'go on' and not self.exit_flag:
-            if self.step == 1:
+            if self.mode in ['run', 'step']:
                 self.linebox.config(state='normal')
                 self.linebox.delete(current_pos)
                 current_pos = str(script.current_line)+'.2'
@@ -793,14 +794,17 @@ class AlgoTaurusGui:
                 self.linebox.config(state='disabled')
                 result = script.execute_command()
                 self.move_robot(labyr)
+                if self.mode == 'run':
+                    self.canvas.after(int(self.run_timer))
                 if self.mode == 'step':
-                    self.step = 0
-            else:
+                    self.mode = 'wait'
+            elif self.mode == 'wait':
+                self.canvas.after(200)
                 self.canvas.update()
-            if self.stop == 1:
+            elif self.mode == 'stop':
                 break
         if not self.exit_flag:
-            if not self.stop:
+            if not self.mode == 'stop':
                 self.tkMessageBox.showinfo('Result', result)
             self.linebox.configure(state='normal')
             self.linebox.delete(current_pos)
