@@ -593,9 +593,15 @@ class AlgoTaurusGui:
 
     # Building menu and coder options
     def change_labyr_type(self):
-        samplab = Labyrinth(x=self.x, y=self.y, labyr_type=self.labyr_type.get())
-        Robot(samplab)
-        self.draw_labyr(samplab.labyr)
+        if self.mode in ['step', 'run']:
+            if self.tkMessageBox.askokcancel(_('Warning'),
+                                             _('Changing the labyrinth type interrupts the code execution and redraws '
+                                               'the labyrinth.\nAre you sure you want to change the labyrinth type?')):
+                self.mode = 'stop'
+        if self.mode not in ['step', 'run']:
+            samplab = Labyrinth(x=self.x, y=self.y, labyr_type=self.labyr_type.get())
+            Robot(samplab)
+            self.draw_labyr(samplab.labyr)
 
     def change_language(self, event=None):
         if config.get('settings', 'language') != self.lang_value.get():
@@ -734,7 +740,6 @@ class AlgoTaurusGui:
         """Running the script from the coder"""
         self.execute = True
         self.buttstop.configure(state='normal')
-        self.labyrmenu.entryconfig("Type", state="disabled")
         self.textPad.configure(state='disabled', bg='white smoke')
         self.textPad.see('1.0')
         edited_text = self.textPad.get('1.0', 'end'+'-1c')
@@ -789,7 +794,6 @@ class AlgoTaurusGui:
             self.buttstep.configure(state='normal')
             self.buttrun.configure(state='normal')
             self.textPad.configure(state='normal', bg='white')
-            self.labyrmenu.entryconfig("Type", state='normal')
             self.execute = False
 
 
