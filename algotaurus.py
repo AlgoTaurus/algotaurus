@@ -37,8 +37,11 @@ _ = t.ugettext
 [_('left'), _('right'), _('step'), _('wall?'), _('exit?'), _('quit'), _('goto')]  # for the generate_pot script
 local_commands = [_(command) for command in ['left', 'right', 'step', 'wall?', 'exit?', 'quit', 'goto']]
 
+labyr_type_names = [_('Four walls'), _('Depth first')]
+
+
 class Labyrinth:
-    def __init__(self, x=11, y=11):
+    def __init__(self, x=11, y=11, labyr_type=1):
         """Create labyrinth.
         x, y: size of the labyrinth
         the minimum size is 11 x 11
@@ -57,22 +60,29 @@ class Labyrinth:
         # Create exits        
         self.labyr = np.ones((y+4, x+4))*2
         self.labyr[2:-2, 2:-2] = 0
-        
-        def find_new_cell(current_cell):
-            """ Depth first search algorithm
-            http://en.wikipedia.org/wiki/Maze_generation_algorithm
-            This one is building the wall, not carving the path.
-            """
-            self.labyr[tuple(current_cell)] = 1
-            neighb_cells = [[-2, 0], [2, 0], [0, 2], [0, -2]]
-            random.shuffle(neighb_cells)
-            for pos in neighb_cells:
-                next_cell = current_cell+pos
-                if self.labyr[tuple(next_cell)] == 0:
-                    self.labyr[tuple((next_cell+current_cell)/2)] = 1
-                    find_new_cell(next_cell)
-            return
-        find_new_cell(np.array([2, 2]))
+
+        if labyr_type == 0:
+            #self.labyr[-3, -3] = 1  # TODO on GUI (not sure about TUI) these are y and x coordinates, not x and y
+            self.labyr[5:-5, 3] = 1
+            self.labyr[5:-5, -4] = 1
+            self.labyr[3, 5:-5] = 1
+            self.labyr[-4, 5:-5] = 1
+        elif labyr_type == 1:
+            def find_new_cell(current_cell):
+                """ Depth first search algorithm
+                http://en.wikipedia.org/wiki/Maze_generation_algorithm
+                This one is building the wall, not carving the path.
+                """
+                self.labyr[tuple(current_cell)] = 1
+                neighb_cells = [[-2, 0], [2, 0], [0, 2], [0, -2]]
+                random.shuffle(neighb_cells)
+                for pos in neighb_cells:
+                    next_cell = current_cell+pos
+                    if self.labyr[tuple(next_cell)] == 0:
+                        self.labyr[tuple((next_cell+current_cell)/2)] = 1
+                        find_new_cell(next_cell)
+                return
+            find_new_cell(np.array([2, 2]))
         
 
 class Robot:
@@ -111,9 +121,9 @@ class Robot:
     
     def step(self):
         if self.labyr[tuple(self.facing_pos)] == 1:
-            return _('Game over. AlgoTaurus run into wall.')
+            return _('Bad news. AlgoTaurus run into wall.')
         elif self.labyr[tuple(self.facing_pos)] == 2:
-            return _('Game over. AlgoTaurus stepped into exit.')
+            return _('Bad news. AlgoTaurus stepped into exit.')
         else:
             self.previous_pos = self.pos[:]
             self.pos = self.facing_pos
@@ -135,7 +145,7 @@ class Robot:
         if self.labyr[tuple(self.facing_pos)] == 2:
             return _('Congratulations! AlgoTaurus successfully reached the exit.')
         else:
-            return _('Game over. AlgoTaurus was not in the exit yet.')
+            return _('Bad news. AlgoTaurus was not in the exit yet.')
     
     def wall(self):
         return True if self.labyr[tuple(self.facing_pos)] == 1 else False
@@ -165,7 +175,7 @@ class Script:
         
         # Check if we reached the end without a solution
         if self.current_line > self.max_line:
-            return _('Game over. Code ended.')
+            return _('Bad news. Code ended.')
 
         # Skip empty line
         if self.code[self.current_line].rstrip() == '':
@@ -430,7 +440,6 @@ class AlgoTaurusGui:
         self.x = 27
         self.y = 27
         self.run_timer = 5.0
-        self.rt_prev = 0
         self.mode = None
         self.execute = False
         self.exit_flag=False
@@ -446,50 +455,54 @@ class AlgoTaurusGui:
 
         self.root.protocol('WM_DELETE_WINDOW', self.exit_command)
 
-        command_help = _('''Help AlgoTaurus to find the exit.
-
-Available commands:
-
-LEFT\t Turn left
-
-RIGHT\t Turn right
-
-STEP\t Step one square
-\t Ahead of wall and exit it crashes.
-           
-WALL? x y\t Is there a wall ahead?
-\t If yes, continue with line x,
-\t otherwise with line y.
-           
-EXIT? x y\t Is there an exit ahead?
-
-QUIT\t Leave the labyrinth
+        # Build up instruction from smaller strings, so if anything is changed later, only the relevant part should
+        # be localized
+        command_help = '\n\n'.join([_('Help AlgoTaurus to find the exit.'),
+                        _('Available commands:'),
+                        _(u'LEFT\t Turn left by 90°'),
+                        _(u'RIGHT\t Turn right by 90°'),
+                        _('''STEP\t Step one square
+\t Ahead of wall and exit it crashes.'''),
+                        _('''WALL? m n\t Is there a wall ahead?
+\t If yes, continue with line m,
+\t otherwise with line n.'''),
+                        _('''EXIT? m n\t Is there an exit ahead?
+\t If yes, continue with line m,
+\t otherwise with line n.'''),
+                        _('''QUIT\t Leave the labyrinth
 \t Ahead of empty field
-\t and wall it crashes.
-           
-GOTO x\t Continue with line x''')
+\t and wall it crashes.'''),
+                        _('''GOTO m\t Continue with line m''')])
 
         # Create menu for the GUI
         languages = {'Hungarian': 'hu', 'English': 'en'}  # do not localize this, because it could be hard for the ...
         # user to switch back after switching accidently to an unknown language
         self.lang_value = tk.StringVar()
         self.lang_value.set(language)
+        self.labyr_type = tk.IntVar()
+        self.labyr_type.set(1)
         self.menu = tk.Menu(self.root, relief=tk.FLAT)
         self.root.config(menu=self.menu)
         self.filemenu = tk.Menu(self.menu, tearoff=False)
-        self.menu.add_cascade(label=_('File'), menu=self.filemenu)
+        self.menu.add_cascade(label=_('Code file'), menu=self.filemenu)
         self.filemenu.add_command(label=_('New'), command=self.new_command, accelerator='Ctrl+N')
         self.filemenu.add_command(label=_('Open...'), command=self.open_command, accelerator='Ctrl+O')
         self.filemenu.add_command(label=_('Save'), command=self.save_command, accelerator='Ctrl+S')
-        self.filemenu.add_separator()
-        self.filemenu.add_command(label=_('Exit'), command=self.exit_command, accelerator='Ctrl+Q')
+        #self.filemenu.add_separator()
         self.editmenu = tk.Menu(self.menu, tearoff=False)
-        self.menu.add_cascade(label=_('Edit'), menu=self.editmenu)
+        self.menu.add_cascade(label=_('Code edit'), menu=self.editmenu)
         self.editmenu.add_command(label=_('Copy'), command=self.copy_command, accelerator='Ctrl+C')
         self.editmenu.add_command(label=_('Cut'), command=self.cut_command, accelerator='Ctrl+X')
         self.editmenu.add_command(label=_('Paste'), command=self.paste_command, accelerator='Ctrl+V')
         self.editmenu.add_separator()
         self.editmenu.add_command(label=_('Select All'), command=self.sel_all, accelerator='Ctrl+A')
+        self.labyrmenu = tk.Menu(self.menu, tearoff=False)
+        self.menu.add_cascade(label=_('Labyrinth'), menu=self.labyrmenu)
+        self.typemenu = tk.Menu(self.labyrmenu, tearoff=False)
+        self.labyrmenu.add_cascade(label=_('Type'), menu=self.typemenu)
+        for labyr_type in [0, 1]:
+            self.typemenu.add_radiobutton(label=labyr_type_names[labyr_type], variable=self.labyr_type, value=labyr_type,
+                                          command=self.change_labyr_type)
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('AlgoTaurus'), menu=self.helpmenu)
         self.languagemenu = tk.Menu(self.helpmenu, tearoff=False)
@@ -498,6 +511,7 @@ GOTO x\t Continue with line x''')
             self.languagemenu.add_radiobutton(label=lang, variable=self.lang_value, value=languages[lang],
                                               command = self.change_language)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
+        self.helpmenu.add_command(label=_('Exit'), command=self.exit_command, accelerator='Ctrl+Q')
         self.rclickmenu = tk.Menu(self.menu, tearoff=False)
         self.rclickmenu.add_command(label=_('Copy'), command=self.copy_command)
         self.rclickmenu.add_command(label=_('Cut'), command=self.cut_command)
@@ -520,16 +534,11 @@ GOTO x\t Continue with line x''')
         self.root.bind('<F3>', self.speed_up)
         
         # Creating the two main frames
-        self.mainframe = tk.Frame()
-        self.speedframe = tk.Frame()
-        self.controlframe = tk.Frame()
-        self.mainframe.pack()
-        self.speedframe.place(relx=0.0, rely=1.0, x=-2, y=-3, anchor="sw")
-        self.controlframe.place(relx=1.0, rely=1.0, x=-2, y=-3, anchor="se")
+        self.mainframe = tk.Frame(master=self.root)
+        self.controlframe = tk.Frame(master=self.mainframe)
+        self.mainframe.pack(fill='both')
 
         # Creating coder widget
-        self.rt_str = tk.StringVar()
-        self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
         self.textPad = tk.Text(self.mainframe, width=15, height=self.lines, wrap='none')
         self.textPad.config(bg='white', fg='black')
         numbers = ''.join([str(i).ljust(2)+'\n' for i in range(1, self.lines+1)])
@@ -537,41 +546,38 @@ GOTO x\t Continue with line x''')
         self.linebox.insert('1.0', numbers)
         self.linebox.configure(bg='grey', fg='black', state='disabled', relief='flat')
         self.codertitle = ttk.Label(self.mainframe, text=_('Coder'), justify='center')
-        self.timerlabel = ttk.Label(self.speedframe, textvariable=self.rt_str)
         self.textPad.bind('<Button-3>', self.rclick)
         self.textPad.bind('<Key>', self.validate_input)        
         # Creating canvas and drawing sample labyrinth
         self.canvas = tk.Canvas(self.mainframe, width=self.size*(self.x+4), height=self.size*(self.y+4))
-        samplab = Labyrinth(self.x, self.y)
-        sample = samplab.labyr
+        samplab = Labyrinth(x=self.x, y=self.y, labyr_type=self.labyr_type.get())
         Robot(samplab)
-        self.draw_labyr(sample)
+        self.draw_labyr(samplab.labyr)
         self.instr = ttk.Label(self.mainframe, text=command_help, justify='left', padding=10)
         # Creating buttons
-        self.buttstop = ttk.Button(self.controlframe, text=_('Stop (F7)'), command=self.stopcommand, state='disabled')
-        self.buttstep = ttk.Button(self.controlframe, text=_('Step (F6)'), command=self.stepmode)
-        self.buttrun = ttk.Button(self.controlframe, text=_('Run (F5)'), command=self.runmode)
-        self.buttspdown = ttk.Button(self.speedframe, text=_('Speed down (F2)'), command=self.speed_down)
-        self.buttspup = ttk.Button(self.speedframe, text=_('Speed up (F3)'), command=self.speed_up)
+        self.buttstop = ttk.Button(self.controlframe, text=_('Stop code\nexecution (F7)'), command=self.stopcommand, state='disabled')
+        self.buttstep = ttk.Button(self.controlframe, text=_('Try the code\nLine by line (F6)'), command=self.stepmode)
+        self.buttrun = ttk.Button(self.controlframe, text=_('Try the code\nContinuously (F5)'), command=self.runmode)
+        self.buttspdown = ttk.Button(self.controlframe, text=_('Slower (F2)'), command=self.speed_down)
+        self.buttspup = ttk.Button(self.controlframe, text=_('Faster (F3)'), command=self.speed_up)
     
         # Placing widgets on the frames with grid geometry manager
 
         # Widgets in mainframe
-        self.codertitle.grid(column=1, row=0, columnspan=2, pady=10)        
-        self.instr.grid(column=0, row=1, sticky='n')        
+        self.codertitle.grid(column=1, row=0, columnspan=2, pady=10)
+        self.instr.grid(column=0, row=1, sticky='n')
         self.linebox.grid(column=1, row=1, sticky='en')
         self.textPad.grid(column=2, row=1, sticky='wn')
         self.canvas.grid(column=3, row=1, sticky='ws', padx=20)
-        #self.codelabel.grid(column=3, row=0, sticky='n')
-        ttk.Label(self.mainframe, text='\n\n').grid(row=3, columnspan=4)  # Adds an empty row to place the buttons
+
         # Widgets in buttonframe
-        self.buttspdown.grid(row=0, column=0, padx=10, pady=10)
-        self.buttspup.grid(row=0, column=1, padx=10, pady=10)
-        self.timerlabel.grid(row=0, column=2, pady=10)
-        self.buttrun.grid(row=0, column=0, padx=20, pady=10)
-        self.buttstep.grid(row=0, column=1, padx=20, pady=10)
-        self.buttstop.grid(row=0, column=2, padx=20, pady=10)
-        
+
+        self.buttspdown.grid(row=1, column=0, padx=5, pady=10)
+        self.buttspup.grid(row=1, column=1, padx=5, pady=10)
+        self.buttrun.grid(row=0, column=0, columnspan=2, padx=10)
+        self.buttstep.grid(row=0, column=2, padx=10)
+        self.buttstop.grid(row=0, column=3, padx=10)
+        self.controlframe.grid(column=0, row=2, columnspan=3, padx=10, pady=10)
         # Center the window and set the minimal size
         self.root.update()
         w, h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
@@ -582,13 +588,22 @@ GOTO x\t Continue with line x''')
         y = h/2 - size[1]/2
         self.root.geometry("%dx%d+%d+%d" % (size + (x, y)))
         self.root.minsize(winw, winh)
-        self.root.focus_force()
-        self.textPad.focus_set()
         self.root.mainloop()
 
     # Building menu and coder options
+    def change_labyr_type(self):
+        if self.mode in ['step', 'run']:
+            if self.tkMessageBox.askokcancel(_('Warning'),
+                                             _('Changing the labyrinth type interrupts the code execution and redraws '
+                                               'the labyrinth.\nAre you sure you want to change the labyrinth type?')):
+                self.mode = 'stop'
+        if self.mode not in ['step', 'run']:
+            samplab = Labyrinth(x=self.x, y=self.y, labyr_type=self.labyr_type.get())
+            Robot(samplab)
+            self.draw_labyr(samplab.labyr)
+
     def change_language(self, event=None):
-        if language != self.lang_value.get():
+        if config.get('settings', 'language') != self.lang_value.get():
             cfgfile = open(dirs.user_config_dir + '/algotaurus.ini', 'w')
             config.set('settings', 'language', self.lang_value.get())
             config.write(cfgfile)
@@ -601,7 +616,10 @@ GOTO x\t Continue with line x''')
             self.textPad.delete(endline, 'end')
 
     def new_command(self, event=None):
-        self.textPad.delete('1.0', 'end')
+        if self.textPad.get('1.0', 'end'+'-1c') != '':
+            if self.tkMessageBox.askokcancel(_('Warning'),
+                                             _('Do you really want to erease the content of the coder?')):
+                self.textPad.delete('1.0', 'end')
 
     def open_command(self, event=None):
         at_file = self.tkFileDialog.askopenfile(parent=self.root, mode='rb', title=_('Select a file'),
@@ -676,7 +694,6 @@ GOTO x\t Continue with line x''')
     
     def move_robot(self, labyr):
         """Moving the robot on the canvas"""
-        self.canvas.after(int(self.run_timer))
         self.canvas.delete(self.labrobot)
         robot = labyr.max()
         col, row = tuple(int(i) for i in (np.where(labyr == robot)))
@@ -690,49 +707,37 @@ GOTO x\t Continue with line x''')
     
     # Button commands
     def stopcommand(self, event=None):
-        self.stop = 1
-        if self.rt_prev:
-            self.run_timer = self.rt_prev
-            
+        self.mode = 'stop'
+
     def stepmode(self, event=None):
         self.mode = 'step'
-        if self.run_timer != 0:
-            self.rt_prev = self.run_timer
-            self.run_timer = 0
-        self.step = 1
         self.buttrun.configure(state='normal')
         if self.execute == False:
             self.execute_code()
 
     def runmode(self, event=None):
         self.mode = 'run'
-        if self.rt_prev:
-            self.run_timer = self.rt_prev
-        self.step = 1
         self.buttrun.configure(state='disabled')
         if self.execute == False:
             self.execute_code()
             
     def speed_up(self, event=None):
-        if self.mode == 'step':
-             self.rt_prev /= 2
-             self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
-        elif self.run_timer > 2:
+        if self.run_timer > 2:
             self.run_timer /= 2
-            self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
+            self.buttspdown.configure(state='enabled')
+            if self.run_timer <= 2:
+                self.buttspup.configure(state='disabled')
 
     def speed_down(self, event=None):
-        if self.mode == 'step':
-            self.rt_prev *= 2
-            self.rt_str.set(_('Run timer: %s msec') % int(self.rt_prev))
-        elif self.run_timer < 500:
+        if self.run_timer < 500:
             self.run_timer *= 2
-            self.rt_str.set(_('Run timer: %s msec') % int(self.run_timer))
-                                                                                                
+            self.buttspup.configure(state='enabled')
+            if self.run_timer >= 500:
+                self.buttspdown.configure(state='disabled')
+
     def execute_code(self):
         """Running the script from the coder"""
         self.execute = True
-        self.stop = 0
         self.buttstop.configure(state='normal')
         self.textPad.configure(state='disabled', bg='white smoke')
         self.textPad.see('1.0')
@@ -744,14 +749,7 @@ GOTO x\t Continue with line x''')
             result = 'go on'
         self.canvas.delete('all')
         lines = edited_text.count('\n')+1
-        for i in edited_text:
-            try:
-                int(i)
-                if int(i) > lines:
-                    result = _('Wrong code: some reference is larger than number of lines!')
-            except:
-                pass
-            
+
         # Resizing labyrinth to fit to the current window size
         self.root.update()
         w, h = self.root.winfo_width(), self.root.winfo_height()
@@ -759,7 +757,7 @@ GOTO x\t Continue with line x''')
         self.canvas.configure(width=self.size*(self.x+4), height=self.size*(self.y+4))
         self.root.update()
         # Drawing the labyrinth
-        lab = Labyrinth(self.x, self.y)
+        lab = Labyrinth(x=self.x, y=self.y, labyr_type=self.labyr_type.get())
         labyr = lab.labyr
         robot = Robot(lab)
         script = Script(edited_text, robot, max_line=lines)
@@ -767,9 +765,8 @@ GOTO x\t Continue with line x''')
         self.canvas.update()
         self.canvas.after(1000)
         current_pos = 'end'
-        self.step = 1
         while result == 'go on' and not self.exit_flag:
-            if self.step == 1:
+            if self.mode in ['run', 'step']:
                 self.linebox.config(state='normal')
                 self.linebox.delete(current_pos)
                 current_pos = str(script.current_line)+'.2'
@@ -777,18 +774,21 @@ GOTO x\t Continue with line x''')
                 self.linebox.config(state='disabled')
                 result = script.execute_command()
                 self.move_robot(labyr)
+                if self.mode == 'run':
+                    self.canvas.after(int(self.run_timer))
                 if self.mode == 'step':
-                    self.step = 0
-            else:
+                    self.mode = 'wait'
+            elif self.mode == 'wait':
+                self.canvas.after(200)
                 self.canvas.update()
-            if self.stop == 1:
+            elif self.mode == 'stop':
                 break
         if not self.exit_flag:
+            if not self.mode == 'stop':
+                self.tkMessageBox.showinfo('Result', result)
             self.linebox.configure(state='normal')
             self.linebox.delete(current_pos)
             self.linebox.configure(state='disabled')
-            if not self.stop:
-                self.tkMessageBox.showinfo('Result', result)
             self.buttstop.configure(state='disabled')
             self.buttstep.configure(state='normal')
             self.buttrun.configure(state='normal')
