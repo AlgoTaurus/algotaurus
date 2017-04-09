@@ -539,7 +539,7 @@ class AlgoTaurusGui:
             for i in range(menu.index('end')+1):
                 if menu.type(i) not in ['tearoff', 'separator']:
                     for ch_i, ch in enumerate(menu.entrycget(i, 'label')):
-                        if ch not in ch_list:
+                        if ch not in ch_list and ch != ' ':
                             menu.entryconfig(i, underline=ch_i)
                             ch_list.append(ch)
                             break
