@@ -488,7 +488,6 @@ class AlgoTaurusGui:
         self.filemenu.add_command(label=_('New'), command=self.new_command, accelerator='Ctrl+N')
         self.filemenu.add_command(label=_('Open...'), command=self.open_command, accelerator='Ctrl+O')
         self.filemenu.add_command(label=_('Save'), command=self.save_command, accelerator='Ctrl+S')
-        #self.filemenu.add_separator()
         self.editmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('Code edit'), menu=self.editmenu)
         self.editmenu.add_command(label=_('Copy'), command=self.copy_command, accelerator='Ctrl+C')
@@ -533,6 +532,18 @@ class AlgoTaurusGui:
         self.root.bind('<F2>', self.speed_down)
         self.root.bind('<F3>', self.speed_up)
         
+        # Build menu item shortcuts
+        for menu in [self.menu, self.filemenu, self.editmenu, self.labyrmenu,
+                     self.typemenu, self.helpmenu, self.languagemenu, self.rclickmenu]:
+            ch_list = []
+            for i in range(menu.index('end')+1):
+                if menu.type(i) not in ['tearoff', 'separator']:
+                    for ch_i, ch in enumerate(menu.entrycget(i, 'label')):
+                        if ch not in ch_list:
+                            menu.entryconfig(i, underline=ch_i)
+                            ch_list.append(ch)
+                            break
+
         # Creating the two main frames
         self.mainframe = tk.Frame(master=self.root)
         self.controlframe = tk.Frame(master=self.mainframe)
