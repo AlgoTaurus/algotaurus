@@ -21,17 +21,18 @@ import gettext
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
+at_dir = os.path.dirname(os.path.abspath(__file__))
 if not os.path.isfile(dirs.user_config_dir+'/algotaurus.ini'):
     import shutil
     if not os.path.exists(dirs.user_config_dir):
         os.makedirs(dirs.user_config_dir)
-    shutil.copyfile(os.path.dirname(os.path.abspath(__file__))+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
+    shutil.copyfile(at_dir+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
 config = ConfigParser.RawConfigParser()
 config.read(dirs.user_config_dir+'/algotaurus.ini')
 language = config.get('settings', 'language')
 
 # Set language for localization
-t = gettext.translation('algotaurus', os.path.dirname(os.path.abspath(__file__))+'/locale/', [language], fallback=True)
+t = gettext.translation('algotaurus', at_dir+'/locale/', [language], fallback=True)
 _ = t.ugettext
 # Only the GUI is localized now, not the TUI
 [_('left'), _('right'), _('step'), _('wall?'), _('exit?'), _('quit'), _('goto')]  # for the generate_pot script
@@ -450,9 +451,9 @@ class AlgoTaurusGui:
 
         # tk limitation for icon use: http://stackoverflow.com/questions/11176638/python-setting-application-icon
         if os.name == 'nt':
-            self.root.iconbitmap('maze.ico')
+            self.root.iconbitmap(at_dir+'/maze.ico')
         else:
-            img = tk.PhotoImage(file='maze.png')
+            img = tk.PhotoImage(file=at_dir+'/maze.png')
             self.root.tk.call('wm', 'iconphoto', self.root._w, img)
 
         self.root.protocol('WM_DELETE_WINDOW', self.exit_command)
