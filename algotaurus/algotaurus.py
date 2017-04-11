@@ -516,6 +516,7 @@ class AlgoTaurusGui:
         self.helpmenu.add_command(label=_('Help'), accelerator='F1',
                                   command=lambda: self.webbrowser.open_new(help_url),)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
+        self.helpmenu.add_separator()
         self.helpmenu.add_command(label=_('Exit'), command=self.exit_command, accelerator='Ctrl+Q')
         self.rclickmenu = tk.Menu(self.menu, tearoff=False)
         self.rclickmenu.add_command(label=_('Copy'), command=self.copy_command)
