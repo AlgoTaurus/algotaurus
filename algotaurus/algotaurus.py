@@ -21,17 +21,18 @@ import gettext
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
+at_dir = os.path.dirname(os.path.abspath(__file__))
 if not os.path.isfile(dirs.user_config_dir+'/algotaurus.ini'):
     import shutil
     if not os.path.exists(dirs.user_config_dir):
         os.makedirs(dirs.user_config_dir)
-    shutil.copyfile(os.path.dirname(os.path.abspath(__file__))+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
+    shutil.copyfile(at_dir+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
 config = ConfigParser.RawConfigParser()
 config.read(dirs.user_config_dir+'/algotaurus.ini')
 language = config.get('settings', 'language')
 
 # Set language for localization
-t = gettext.translation('algotaurus', os.path.dirname(os.path.abspath(__file__))+'/locale/', [language], fallback=True)
+t = gettext.translation('algotaurus', at_dir+'/locale/', [language], fallback=True)
 _ = t.ugettext
 # Only the GUI is localized now, not the TUI
 [_('left'), _('right'), _('step'), _('wall?'), _('exit?'), _('quit'), _('goto')]  # for the generate_pot script
@@ -428,11 +429,13 @@ class AlgoTaurusGui:
         import tkFileDialog
         import tkMessageBox
         import ttk
+        import webbrowser
 
         self.tk = tk
         self.ttk = ttk
         self.tkFileDialog = tkFileDialog
         self.tkMessageBox = tkMessageBox
+        self.webbrowser = webbrowser
 
         # Initial parameters
         self.size = size
@@ -448,9 +451,9 @@ class AlgoTaurusGui:
 
         # tk limitation for icon use: http://stackoverflow.com/questions/11176638/python-setting-application-icon
         if os.name == 'nt':
-            self.root.iconbitmap('maze.ico')
+            self.root.iconbitmap(at_dir+'/maze.ico')
         else:
-            img = tk.PhotoImage(file='maze.png')
+            img = tk.PhotoImage(file=at_dir+'/maze.png')
             self.root.tk.call('wm', 'iconphoto', self.root._w, img)
 
         self.root.protocol('WM_DELETE_WINDOW', self.exit_command)
@@ -477,6 +480,7 @@ class AlgoTaurusGui:
         # Create menu for the GUI
         languages = {'Hungarian': 'hu', 'English': 'en'}  # do not localize this, because it could be hard for the ...
         # user to switch back after switching accidently to an unknown language
+        help_url = 'https://github.com/krajcsi/algotaurus/blob/master/README.md'
         self.lang_value = tk.StringVar()
         self.lang_value.set(language)
         self.labyr_type = tk.IntVar()
@@ -488,7 +492,6 @@ class AlgoTaurusGui:
         self.filemenu.add_command(label=_('New'), command=self.new_command, accelerator='Ctrl+N')
         self.filemenu.add_command(label=_('Open...'), command=self.open_command, accelerator='Ctrl+O')
         self.filemenu.add_command(label=_('Save'), command=self.save_command, accelerator='Ctrl+S')
-        #self.filemenu.add_separator()
         self.editmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('Code edit'), menu=self.editmenu)
         self.editmenu.add_command(label=_('Copy'), command=self.copy_command, accelerator='Ctrl+C')
@@ -510,7 +513,10 @@ class AlgoTaurusGui:
         for lang in sorted(languages.keys()):
             self.languagemenu.add_radiobutton(label=lang, variable=self.lang_value, value=languages[lang],
                                               command = self.change_language)
+        self.helpmenu.add_command(label=_('Help'), accelerator='F1',
+                                  command=lambda: self.webbrowser.open_new(help_url),)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
+        self.helpmenu.add_separator()
         self.helpmenu.add_command(label=_('Exit'), command=self.exit_command, accelerator='Ctrl+Q')
         self.rclickmenu = tk.Menu(self.menu, tearoff=False)
         self.rclickmenu.add_command(label=_('Copy'), command=self.copy_command)
@@ -527,12 +533,25 @@ class AlgoTaurusGui:
         self.root.bind('<Control-a>', self.sel_all)
         self.root.bind('<Control-A>', self.sel_all)        
         # Hotkeys
+        self.root.bind('<F1>', lambda x: self.webbrowser.open_new(help_url))
         self.root.bind('<F5>', self.runmode)
         self.root.bind('<F6>', self.stepmode)
         self.root.bind('<F7>', self.stopcommand)
         self.root.bind('<F2>', self.speed_down)
         self.root.bind('<F3>', self.speed_up)
         
+        # Build menu item shortcuts
+        for menu in [self.menu, self.filemenu, self.editmenu, self.labyrmenu,
+                     self.typemenu, self.helpmenu, self.languagemenu, self.rclickmenu]:
+            ch_list = []
+            for i in range(menu.index('end')+1):
+                if menu.type(i) not in ['tearoff', 'separator']:
+                    for ch_i, ch in enumerate(menu.entrycget(i, 'label')):
+                        if ch not in ch_list and ch != ' ':
+                            menu.entryconfig(i, underline=ch_i)
+                            ch_list.append(ch)
+                            break
+
         # Creating the two main frames
         self.mainframe = tk.Frame(master=self.root)
         self.controlframe = tk.Frame(master=self.mainframe)
