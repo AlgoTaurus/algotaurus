@@ -480,7 +480,7 @@ class AlgoTaurusGui:
         # Create menu for the GUI
         languages = {'Hungarian': 'hu', 'English': 'en'}  # do not localize this, because it could be hard for the ...
         # user to switch back after switching accidently to an unknown language
-        help_url = 'https://github.com/krajcsi/algotaurus/blob/master/README.md'
+        help_url = 'https://github.com/AlgoTaurus/algotaurus/'
         self.lang_value = tk.StringVar()
         self.lang_value.set(language)
         self.labyr_type = tk.IntVar()
@@ -509,13 +509,14 @@ class AlgoTaurusGui:
         self.helpmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('AlgoTaurus'), menu=self.helpmenu)
         self.languagemenu = tk.Menu(self.helpmenu, tearoff=False)
+        self.helpmenu.add_command(label=_('Help'), accelerator='F1',
+                                  command=lambda: self.webbrowser.open_new(help_url),)
         self.helpmenu.add_cascade(label=_('Language'), menu=self.languagemenu)
         for lang in sorted(languages.keys()):
             self.languagemenu.add_radiobutton(label=lang, variable=self.lang_value, value=languages[lang],
                                               command = self.change_language)
-        self.helpmenu.add_command(label=_('Help'), accelerator='F1',
-                                  command=lambda: self.webbrowser.open_new(help_url),)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
+        self.helpmenu.add_separator()
         self.helpmenu.add_command(label=_('Exit'), command=self.exit_command, accelerator='Ctrl+Q')
         self.rclickmenu = tk.Menu(self.menu, tearoff=False)
         self.rclickmenu.add_command(label=_('Copy'), command=self.copy_command)
