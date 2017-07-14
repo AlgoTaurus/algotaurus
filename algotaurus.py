@@ -428,11 +428,13 @@ class AlgoTaurusGui:
         import tkFileDialog
         import tkMessageBox
         import ttk
+        import webbrowser
 
         self.tk = tk
         self.ttk = ttk
         self.tkFileDialog = tkFileDialog
         self.tkMessageBox = tkMessageBox
+        self.webbrowser = webbrowser
 
         # Initial parameters
         self.size = size
@@ -477,6 +479,7 @@ class AlgoTaurusGui:
         # Create menu for the GUI
         languages = {'Hungarian': 'hu', 'English': 'en'}  # do not localize this, because it could be hard for the ...
         # user to switch back after switching accidently to an unknown language
+        help_url = 'https://github.com/krajcsi/algotaurus/blob/master/README.md'
         self.lang_value = tk.StringVar()
         self.lang_value.set(language)
         self.labyr_type = tk.IntVar()
@@ -509,6 +512,8 @@ class AlgoTaurusGui:
         for lang in sorted(languages.keys()):
             self.languagemenu.add_radiobutton(label=lang, variable=self.lang_value, value=languages[lang],
                                               command = self.change_language)
+        self.helpmenu.add_command(label=_('Help'), accelerator='F1',
+                                  command=lambda: self.webbrowser.open_new(help_url),)
         self.helpmenu.add_command(label=_('About...'), command=self.about_command)
         self.helpmenu.add_command(label=_('Exit'), command=self.exit_command, accelerator='Ctrl+Q')
         self.rclickmenu = tk.Menu(self.menu, tearoff=False)
@@ -526,6 +531,7 @@ class AlgoTaurusGui:
         self.root.bind('<Control-a>', self.sel_all)
         self.root.bind('<Control-A>', self.sel_all)        
         # Hotkeys
+        self.root.bind('<F1>', lambda x: self.webbrowser.open_new(help_url))
         self.root.bind('<F5>', self.runmode)
         self.root.bind('<F6>', self.stepmode)
         self.root.bind('<F7>', self.stopcommand)
