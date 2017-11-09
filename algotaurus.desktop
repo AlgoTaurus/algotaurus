@@ -1,0 +1,12 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.1.1
+Type=Application
+Name=AlgoTaurus
+Comment=An educational game to teach programming. Write a program to make the AlgoTaurus find the exit.
+Exec=algotaurus
+Icon=/usr/lib/python2.7/dist-packages/algotaurus/maze.png
+Categories=Utility;
+Terminal=false
+StartupNotify=true
+StartupWMClass=algotaurus
