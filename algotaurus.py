@@ -666,7 +666,7 @@ class AlgoTaurusGui:
             self.root.destroy()
 
     def about_command(self, event=None):
-        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus 1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'))
+        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus 1.1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'))
 
     def sel_all(self, event=None):
         self.textPad.tag_add('sel', '1.0', 'end')
