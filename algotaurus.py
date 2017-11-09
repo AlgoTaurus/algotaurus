@@ -607,6 +607,7 @@ class AlgoTaurusGui:
         y = h/2 - size[1]/2
         self.root.geometry("%dx%d+%d+%d" % (size + (x, y)))
         self.root.update()
+        self.root.focus_force()
         self.root.minsize(self.root.winfo_width(), self.root.winfo_height())
         self.root.mainloop()
 
