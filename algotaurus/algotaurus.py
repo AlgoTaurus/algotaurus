@@ -630,6 +630,7 @@ class AlgoTaurusGui:
             cfgfile = open(dirs.user_config_dir + '/algotaurus.ini', 'w')
             config.set('settings', 'language', self.lang_value.get())
             config.write(cfgfile)
+            cfgfile.close()  # close the file, otherwise if the application is closed here, the ini file will be empty
             self.tkMessageBox.showinfo(title=_('Info'), message=_('Changes will be applied on the next startup'))
 
     def validate_input(self, event):
