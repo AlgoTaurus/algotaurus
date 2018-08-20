@@ -1,0 +1,5 @@
+recursive-include algotaurus *.py *.png *.ico *.ini
+recursive-include algotaurus/locale *.pot *.po * *.mo
+include algotaurus.desktop
+include README.md
+include LICENSE
