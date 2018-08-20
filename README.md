@@ -42,7 +42,9 @@ Some tasks to solve and discuss:
 
 ## Localization
 
-If you want to use AlgoTaurus in other languages, you can help translating it on [POEditor](https://poeditor.com/projects/view?id=91267). 
+If you want to use AlgoTaurus in other languages, you can help translating it on [POEditor](https://poeditor.com/projects/view?id=91267).
+
+Localizers: Attila Krajcsi (Hungarian), Seyed Amir Hossein Yousefi (Persian)
 
 ## Changelog
 
