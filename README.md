@@ -48,6 +48,10 @@ Localizers: Attila Krajcsi (Hungarian), Seyed Amir Hossein Yousefi (Persian)
 
 ## Changelog
 
+Upcoming version
+- Persian version (thanks to Seyed Amir Hossein Yousefi)
+- AlgoTaurus can be installed as Python package
+
 Version 1.1.1
 - Add menu shortcuts
 - Add Help to AlgoTaurus menu
