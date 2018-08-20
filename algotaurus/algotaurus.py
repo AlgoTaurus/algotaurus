@@ -478,7 +478,7 @@ class AlgoTaurusGui:
                         _('''GOTO m\t Continue with line m''')])
 
         # Create menu for the GUI
-        languages = {'Hungarian': 'hu', 'English': 'en'}  # do not localize this, because it could be hard for the ...
+        languages = {'Hungarian': 'hu', 'English': 'en', 'Persian': 'fa'}  # do not localize this, because it could be hard for the ...
         # user to switch back after switching accidently to an unknown language
         help_url = 'https://github.com/AlgoTaurus/algotaurus/'
         self.lang_value = tk.StringVar()
