@@ -68,6 +68,6 @@ Version 1.0
 
 The game is a remake and an extension of the game Labirint by Lukyanov Konstantin and Volkov Sergey.
 
-Copyright, 2015-2017, Attila Krajcsi, Ádám Markója (GUI)
+Copyright, 2015-2018, Attila Krajcsi, Ádám Markója (GUI)
 
 AlgoTaurus is distributed under the terms of the GNU General Public License 3.

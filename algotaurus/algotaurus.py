@@ -5,7 +5,7 @@ AlgoTaurus
 An educational game to teach programming.
 Write a program to make the AlgoTaurus find the exit.
 
-Copyright, 2015-2017, Attila Krajcsi, Ádám Markója (GUI)
+Copyright, 2015-2018, Attila Krajcsi, Ádám Markója (GUI)
 
 AlgoTaurus is distributed under the terms of the GNU General Public License 3.
 """
@@ -20,6 +20,7 @@ import ConfigParser
 import gettext
 
 __version__  = '1.1.1'
+copyright_years = '2015-2018'
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
@@ -668,7 +669,7 @@ class AlgoTaurusGui:
             self.root.destroy()
 
     def about_command(self, event=None):
-        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus %s\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója') % (__version__))
+        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus %s\nCopyright © %s Attila Krajcsi and Ádám Markója') % (__version__, copyright_years))
 
     def sel_all(self, event=None):
         self.textPad.tag_add('sel', '1.0', 'end')
