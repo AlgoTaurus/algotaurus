@@ -19,6 +19,8 @@ import appdirs
 import ConfigParser
 import gettext
 
+__version__  = '1.1.1'
+
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
 at_dir = os.path.dirname(os.path.abspath(__file__))
@@ -666,7 +668,7 @@ class AlgoTaurusGui:
             self.root.destroy()
 
     def about_command(self, event=None):
-        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus 1.1.1\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója'))
+        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus %s\nCopyright © 2015-2017 Attila Krajcsi and Ádám Markója') % (__version__))
 
     def sel_all(self, event=None):
         self.textPad.tag_add('sel', '1.0', 'end')
