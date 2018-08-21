@@ -40,12 +40,6 @@ Some tasks to solve and discuss:
 - Try to make the code to move as little as possible.
 - Try to minimize the number of lines needed to be executed.
 
-## Localization
-
-If you want to use AlgoTaurus in other languages, you can help translating it on [POEditor](https://poeditor.com/projects/view?id=91267).
-
-Localizers: Attila Krajcsi (Hungarian), Seyed Amir Hossein Yousefi (Persian)
-
 ## Changelog
 
 Upcoming version
@@ -67,6 +61,12 @@ Version 1.1
 
 Version 1.0
 - Initial release
+
+## Localization
+
+If you want to use AlgoTaurus in other languages, you can help translating it on [POEditor](https://poeditor.com/projects/view?id=91267).
+
+Localizers: Attila Krajcsi (Hungarian), Seyed Amir Hossein Yousefi (Persian)
 
 ## Copyright
 
