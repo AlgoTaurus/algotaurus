@@ -64,7 +64,7 @@ Version 1.0
 
 ## Localization
 
-If you want to use AlgoTaurus in other languages, you can help translating it on [POEditor](https://poeditor.com/projects/view?id=91267).
+If you want to use AlgoTaurus in other languages, you can help translating it on [POEditor](https://poeditor.com/join/project/Ez9KFIxrhE).
 
 Localizers: Attila Krajcsi (Hungarian), Seyed Amir Hossein Yousefi (Persian)
 
