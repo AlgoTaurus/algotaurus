@@ -1,6 +1,6 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
-Version=1.1.1
+Version=1.2beta
 Type=Application
 Name=AlgoTaurus
 Comment=An educational game to teach programming. Write a program to make the AlgoTaurus find the exit.

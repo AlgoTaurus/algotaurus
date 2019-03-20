@@ -19,8 +19,8 @@ import appdirs
 import ConfigParser
 import gettext
 
-__version__  = '1.1.1'
-copyright_years = '2015-2018'
+__version__  = '1.2beta'
+copyright_years = '2015-2019'
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')

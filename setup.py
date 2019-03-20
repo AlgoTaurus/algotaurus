@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 from nvpy import nvpy
 
 setup(name='algotaurus',
-      version='1.1.1',
+      version='1.2b0',
       license='GNU3',
       description='An educational game to teach programming.',
       long_description='Write a program to make the AlgoTaurus find the exit.',
