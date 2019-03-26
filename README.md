@@ -3,6 +3,10 @@ AlgoTaurus
 An educational game to teach programming.
 Write a program to make the AlgoTaurus find the exit.
 
+More information about the software, the justification of its design and its use:
+
+Krajcsi, A., Csapodi, C., & Stettner, E. (2019). AlgoTaurus: an educational computer programming game for beginners. Interactive Learning Environments. https://doi.org/10.1080/10494820.2019.1593862
+
 ![AlgoTaurus](screenshot.png)
 
 ## Installation
@@ -39,6 +43,8 @@ Some tasks to solve and discuss:
 - Try to make the code as short as possible.
 - Try to make the code to move as little as possible.
 - Try to minimize the number of lines needed to be executed.
+
+See more details about the use in the scholar paper cited above.
 
 ## Changelog
 
