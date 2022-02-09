@@ -15,7 +15,7 @@ On Windows
 - Download the installer from the [Relase page](https://github.com/AlgoTaurus/algotaurus/releases) or from [SourceForge](http://sourceforge.net/projects/algotaurus/)
 - After installation you can run AlgoTaurus from the Start menu.
 
-On Linux
+On Linux and Apple macOS
 - Download the source files from the [Relase page](https://github.com/AlgoTaurus/algotaurus/releases) and unzip them.
 - Open terminal in the directory you have copied the files to and type 'python algotaurus.py'
 - (Or you can use the Windows version with Wine.)
