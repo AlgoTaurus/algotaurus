@@ -456,7 +456,7 @@ class AlgoTaurusGui:
         if os.name == 'nt':
             self.root.iconbitmap(at_dir+'/maze.ico')
         else:
-            img = tk.PhotoImage(file=at_dir+'/maze.png')
+            img = tk.PhotoImage(file=at_dir+'/maze.gif')
             self.root.tk.call('wm', 'iconphoto', self.root._w, img)
 
         self.root.protocol('WM_DELETE_WINDOW', self.exit_command)
