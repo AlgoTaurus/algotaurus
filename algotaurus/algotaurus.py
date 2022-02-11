@@ -5,7 +5,7 @@ AlgoTaurus
 An educational game to teach programming.
 Write a program to make the AlgoTaurus find the exit.
 
-Copyright, 2015-2018, Attila Krajcsi, Ádám Markója (GUI)
+Copyright, 2015-2021, Attila Krajcsi, Ádám Markója (GUI)
 
 AlgoTaurus is distributed under the terms of the GNU General Public License 3.
 """
@@ -16,11 +16,11 @@ import numpy as np
 import sys
 import os
 import appdirs
-import ConfigParser
+import configparser
 import gettext
 
 __version__  = '1.2beta'
-copyright_years = '2015-2019'
+copyright_years = '2015-2021'
 
 # Read config file
 dirs = appdirs.AppDirs('algotaurus')
@@ -30,13 +30,13 @@ if not os.path.isfile(dirs.user_config_dir+'/algotaurus.ini'):
     if not os.path.exists(dirs.user_config_dir):
         os.makedirs(dirs.user_config_dir)
     shutil.copyfile(at_dir+'/algotaurus.ini', dirs.user_config_dir+'/algotaurus.ini')
-config = ConfigParser.RawConfigParser()
+config = configparser.RawConfigParser()
 config.read(dirs.user_config_dir+'/algotaurus.ini')
 language = config.get('settings', 'language')
 
 # Set language for localization
 t = gettext.translation('algotaurus', at_dir+'/locale/', [language], fallback=True)
-_ = t.ugettext
+_ = t.gettext
 # Only the GUI is localized now, not the TUI
 [_('left'), _('right'), _('step'), _('wall?'), _('exit?'), _('quit'), _('goto')]  # for the generate_pot script
 local_commands = [_(command) for command in ['left', 'right', 'step', 'wall?', 'exit?', 'quit', 'goto']]
@@ -83,7 +83,7 @@ class Labyrinth:
                 for pos in neighb_cells:
                     next_cell = current_cell+pos
                     if self.labyr[tuple(next_cell)] == 0:
-                        self.labyr[tuple((next_cell+current_cell)/2)] = 1
+                        self.labyr[tuple((next_cell+current_cell)//2)] = 1
                         find_new_cell(next_cell)
                 return
             find_new_cell(np.array([2, 2]))
@@ -103,8 +103,8 @@ class Robot:
         
         # Place the robot somewhere in the middle
         while True:
-            self.pos = np.array([self.labyr.shape[0]/2 + random.choice([-1, -0, 1]),
-                                 self.labyr.shape[1]/2 + random.choice([-1, -0, 1])])
+            self.pos = np.array([self.labyr.shape[0]//2 + random.choice([-1, -0, 1]),
+                                 self.labyr.shape[1]//2 + random.choice([-1, -0, 1])])
             if self.labyr[tuple(self.pos)] == 0:
                 break
         self.previous_pos = self.pos[:]
@@ -246,7 +246,7 @@ class AlgoTaurusTui:
             import curses
             import curses.textpad
         except:
-            print 'Cannot import curses module. Install the curses python module.'
+            print('Cannot import curses module. Install the curses python module.')
 
         self.curses = curses
 
@@ -259,7 +259,7 @@ class AlgoTaurusTui:
         # FIXME the help string cannot be printed on the minimum size
         if self.maxx < 50 or self.maxy < 15:
             curses.endwin()
-            print 'Too small terminal. Cannot run AlgoTaurus'
+            print('Too small terminal. Cannot run AlgoTaurus')
 
         # Code area
         edit_border_win = curses.newwin(self.maxy-5, 17, 0, 0)
@@ -287,8 +287,8 @@ class AlgoTaurusTui:
         self.labyr_win = curses.newwin(self.maxy-7, self.maxx-20, 1, 18)
         self.labyr_win.refresh()
         
-        self.result_border_win = curses.newwin(5, self.maxx-22, (self.maxy-18)/2, 19)
-        self.result_win = curses.newwin(3, self.maxx-26, (self.maxy-18)/2+1, 21)
+        self.result_border_win = curses.newwin(5, self.maxx-22, (self.maxy-18)//2, 19)
+        self.result_win = curses.newwin(3, self.maxx-26, (self.maxy-18)//2+1, 21)
         
         # Command area
         self.command_win = curses.newwin(5, self.maxx-1, self.maxy-5, 0)
@@ -375,7 +375,7 @@ GOTO x     continue with line x'''
                 elif user_key == 'KEY_F(10)':
                     mode = 'quit'
                 elif user_key == '+':
-                    run_timer /= 2
+                    run_timer //= 2
                 elif user_key == '-':
                     run_timer *= 2
                 if mode != 'wait':
@@ -428,16 +428,16 @@ class AlgoTaurusGui:
 
     def __init__(self, size=15, lines=30):
         import os
-        import Tkinter as tk
-        import tkFileDialog
-        import tkMessageBox
-        import ttk
+        import tkinter as tk
+        from tkinter import filedialog
+        from tkinter import messagebox
+        from tkinter import ttk
         import webbrowser
 
         self.tk = tk
-        self.ttk = ttk
-        self.tkFileDialog = tkFileDialog
-        self.tkMessageBox = tkMessageBox
+        self.ttk = tk.ttk
+        self.filedialog = filedialog
+        self.messagebox = messagebox
         self.webbrowser = webbrowser
 
         # Initial parameters
@@ -494,7 +494,7 @@ class AlgoTaurusGui:
         self.menu.add_cascade(label=_('Code file'), menu=self.filemenu)
         self.filemenu.add_command(label=_('New'), command=self.new_command, accelerator='Ctrl+N')
         self.filemenu.add_command(label=_('Open...'), command=self.open_command, accelerator='Ctrl+O')
-        self.filemenu.add_command(label=_('Save'), command=self.save_command, accelerator='Ctrl+S')
+        self.filemenu.add_command(label=_('Save...'), command=self.save_command, accelerator='Ctrl+S')
         self.editmenu = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label=_('Code edit'), menu=self.editmenu)
         self.editmenu.add_command(label=_('Copy'), command=self.copy_command, accelerator='Ctrl+C')
@@ -567,7 +567,7 @@ class AlgoTaurusGui:
         self.linebox = tk.Text(self.mainframe, width=3, height=self.lines, state='normal')
         self.linebox.insert('1.0', numbers)
         self.linebox.configure(bg='grey', fg='black', state='disabled', relief='flat')
-        self.codertitle = ttk.Label(self.mainframe, text=_('Coder'), justify='center')
+        self.codertitle = ttk.Label(self.mainframe, background=self.mainframe['background'], text=_('Coder'), justify='center')
         self.textPad.bind('<Button-3>', self.rclick)
         self.textPad.bind('<Key>', self.validate_input)        
         # Creating canvas and drawing sample labyrinth
@@ -575,7 +575,7 @@ class AlgoTaurusGui:
         samplab = Labyrinth(x=self.x, y=self.y, labyr_type=self.labyr_type.get())
         Robot(samplab)
         self.draw_labyr(samplab.labyr)
-        self.instr = ttk.Label(self.mainframe, text=command_help, justify='left', padding=10)
+        self.instr = ttk.Label(self.mainframe, background=self.mainframe['background'], text=command_help, justify='left', padding=10)
         # Creating buttons
         self.buttstop = ttk.Button(self.controlframe, text=_('Stop code\nexecution (F7)'), command=self.stopcommand, state='disabled')
         self.buttstep = ttk.Button(self.controlframe, text=_('Try the code\nLine by line (F6)'), command=self.stepmode)
@@ -606,8 +606,8 @@ class AlgoTaurusGui:
         winw, winh = self.root.winfo_width(), self.root.winfo_height()
         self.padding = (winw-self.x*(self.size-1), winh-self.y*(self.size-1))
         size = tuple(int(numb)+30 for numb in self.root.geometry().split('+')[0].split('x'))
-        x = w/2 - size[0]/2
-        y = h/2 - size[1]/2
+        x = w//2 - size[0]//2
+        y = h//2 - size[1]//2
         self.root.geometry("%dx%d+%d+%d" % (size + (x, y)))
         self.root.update()
         self.root.minsize(self.root.winfo_width(), self.root.winfo_height())
@@ -616,7 +616,7 @@ class AlgoTaurusGui:
     # Building menu and coder options
     def change_labyr_type(self):
         if self.mode in ['step', 'run']:
-            if self.tkMessageBox.askokcancel(_('Warning'),
+            if self.messagebox.askokcancel(_('Warning'),
                                              _('Changing the labyrinth type interrupts the code execution and redraws '
                                                'the labyrinth.\nAre you sure you want to change the labyrinth type?')):
                 self.mode = 'stop'
@@ -631,22 +631,22 @@ class AlgoTaurusGui:
             config.set('settings', 'language', self.lang_value.get())
             config.write(cfgfile)
             cfgfile.close()  # close the file, otherwise if the application is closed here, the ini file will be empty
-            self.tkMessageBox.showinfo(title=_('Info'), message=_('Changes will be applied on the next startup'))
+            self.messagebox.showinfo(title=_('Info'), message=_('Changes will be applied on the next startup'))
 
     def validate_input(self, event):
-        lines = self.textPad.index('end').split('.')[0]
+        lines = int(self.textPad.index('end').split('.')[0])
         if lines > self.lines+2:
             endline = str(self.lines+1)+'.0'
             self.textPad.delete(endline, 'end')
 
     def new_command(self, event=None):
         if self.textPad.get('1.0', 'end'+'-1c') != '':
-            if self.tkMessageBox.askokcancel(_('Warning'),
+            if self.messagebox.askokcancel(_('Warning'),
                                              _('Do you really want to erease the content of the coder?')):
                 self.textPad.delete('1.0', 'end')
 
     def open_command(self, event=None):
-        at_file = self.tkFileDialog.askopenfile(parent=self.root, mode='rb', title=_('Select a file'),
+        at_file = self.filedialog.askopenfile(parent=self.root, mode='rb', title=_('Select a file'),
                                                 filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), (_('all files'), '.*')])
         if at_file != None:
             contents = at_file.read()
@@ -655,7 +655,7 @@ class AlgoTaurusGui:
             at_file.close()
 
     def save_command(self, event=None):
-        at_file = self.tkFileDialog.asksaveasfile(mode='w', defaultextension='.lab',
+        at_file = self.filedialog.asksaveasfile(mode='w', defaultextension='.lab',
                                                   filetypes=[(_('AlgoTaurus syntaxes'), '*.lab'), (_('all files'), '.*')],
                                                   initialfile='lab01.lab')
         if at_file != None:
@@ -665,12 +665,12 @@ class AlgoTaurusGui:
             at_file.close()
 
     def exit_command(self, event=None):
-        if self.tkMessageBox.askokcancel(_('Quit'), _('Do you really want to quit?')):
+        if self.messagebox.askokcancel(_('Quit'), _('Do you really want to quit?')):
             self.exit_flag=True
             self.root.destroy()
 
     def about_command(self, event=None):
-        self.tkMessageBox.showinfo(_('About'), _(u'AlgoTaurus %s\nCopyright © %s Attila Krajcsi and Ádám Markója') % (__version__, copyright_years))
+        self.messagebox.showinfo(_('About'), _(u'AlgoTaurus %s\nCopyright © %s Attila Krajcsi and Ádám Markója') % (__version__, copyright_years))
 
     def sel_all(self, event=None):
         self.textPad.tag_add('sel', '1.0', 'end')
@@ -747,7 +747,7 @@ class AlgoTaurusGui:
             
     def speed_up(self, event=None):
         if self.run_timer > 2:
-            self.run_timer /= 2
+            self.run_timer //= 2
             self.buttspdown.configure(state='enabled')
             if self.run_timer <= 2:
                 self.buttspup.configure(state='disabled')
@@ -777,7 +777,7 @@ class AlgoTaurusGui:
         # Resizing labyrinth to fit to the current window size
         self.root.update()
         w, h = self.root.winfo_width(), self.root.winfo_height()
-        self.x, self.y = (w-self.padding[0])/self.size, (h-self.padding[1])/self.size
+        self.x, self.y = (w-self.padding[0])//self.size, (h-self.padding[1])//self.size
         self.canvas.configure(width=self.size*(self.x+4), height=self.size*(self.y+4))
         self.root.update()
         # Drawing the labyrinth
@@ -809,7 +809,7 @@ class AlgoTaurusGui:
                 break
         if not self.exit_flag:
             if not self.mode == 'stop':
-                self.tkMessageBox.showinfo('Result', result)
+                self.messagebox.showinfo('Result', result)
             self.linebox.configure(state='normal')
             self.linebox.delete(current_pos)
             self.linebox.configure(state='disabled')
@@ -825,10 +825,10 @@ if __name__ == '__main__':
         if sys.argv[1] in ['-t', '-tui']:  # Run TUI version
             labyr = AlgoTaurusTui()
         else:
-            print '''Use of AlgoTaurus:
+            print('''Use of AlgoTaurus:
 algotaurus -t
     run in text user interface mode
 algotaurus
-    run in graphical user interface mode'''
+    run in graphical user interface mode''')
     else:  # Run GUI version
         root = AlgoTaurusGui()
